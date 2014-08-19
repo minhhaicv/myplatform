@@ -1,0 +1,39 @@
+#slider {
+	position: relative;
+	overflow: hidden;
+}
+		
+#slider .slide {
+	background: #EEEEEE url(preloader.gif) center center no-repeat;
+}	
+
+#slider .caption-header{
+	display: block;
+	font-weight: bold;
+}
+
+#slider .caption-header{
+	display: block;
+	font-weight: bold;
+}
+	
+#slider .caption-text{
+	display: block;
+	margin-top: 3px;
+	height: 30px;
+	overflow: hidden;
+	text-align: left !important;
+}
+	
+/*Hyperlink Styles*/
+#slider a{		
+	color:#FFF;
+}
+
+#slider .noSelect {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}

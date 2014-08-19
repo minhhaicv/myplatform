@@ -1,0 +1,22 @@
+User-agent: *
+Disallow: /*.php$
+Disallow: /*.txt$
+Disallow: /*.wmv$
+Disallow: /*/trackback/$
+
+Allow: /sitemap.xml$
+Allow: /sitemap.xml.gz$
+Allow: /hinh-anh/
+Allow: /feed/rss
+Allow: /
+
+Disallow: /*.js$
+Disallow: /*.css$
+Disallow: /*.cgi$
+Disallow: /cgi-bin/
+Disallow: /backend/
+
+Disallow: /*.xhtml$
+Disallow: /*?
+
+

@@ -1,0 +1,17 @@
+#   backward compatibility ruleset for rewriting document.html to document.php
+#   when and only when document.php exists but no longer document.html
+
+#http://www.kensfi.com/serve-static-content-from-a-cookieless-domain/
+<IfModule mod_rewrite.c>
+  RewriteEngine on	
+	RewriteBase /
+		
+	RewriteRule ^timthumb.php?(.*)$ timthumb.php?$1 [L,QSA]
+	RewriteRule ^image/([0-9]+)-([0-9]+)-([0-9]+)/(.*)$ timthumb.php?src=$4&w=$1&h=$2&zc=$3 [L,QSA]
+	
+	
+	#RewriteCond %{HTTP_REFERER} !^$
+	#RewriteCond %{HTTP_REFERER} !^http://([a-z0-9]\.)?ladysg\.com [NC]
+	#RewriteRule \.(gif|jpe?g|png|js)$ - [F,NC,L]
+</IfModule>
+IndexIgnore * 
