@@ -6,15 +6,15 @@ class Model{
                         'select'=> empty($fields) ? "*" : $fields,
                         'where' => "{$this->alias}.id = {$id} AND {$this->alias}.deleted = 0",
                         'order' => "{$this->alias}.id desc",
-                    );
-        
+        );
+    
         return $this->_findFirst($option);
     }
-	
+    
 	public function find($option = array(), $type = 'all', $key = 'id') {
 		$func = '_find'.ucfirst($type);
 		
-		return $this->$func($option);
+		return $this->$func($option, $key);
 	}
 	
 	private function _findAll($option, $key= 'id') {
@@ -51,15 +51,15 @@ class Model{
 		$query = $db->buildQuery($option);
 		
 		$q = $db->renderStatement('select', $query);
-		print "<pre>";
-		print_r($q);
-		print "</pre>";
+// 		print "<pre>";
+// 		print_r($q);
+// 		print "</pre>";
 		return $db->query($q);
 	}
 	
 	public function query($query = '') {
         global $db;
-  
+
         return $db->query($query);
 	}
 
@@ -73,9 +73,9 @@ class Model{
 	    $query = $db->buildQuery($option, 'create');
 	    
 	    $q = $db->renderStatement('create', $query);
-print "<pre>";
-print_r($q);
-print "</pre>";
+// print "<pre>";
+// print_r($q);
+// print "</pre>";
 	    return $db->query($q, true);
 	}
 	
@@ -86,10 +86,7 @@ print "</pre>";
 	    $query = $db->buildQuery($data, 'update');
 	    
 	    $q = $db->renderStatement('update', $query);
-	    
-	    print "<pre>";
-	    print_r($q);
-	    print "</pre>";
+
 	    return $db->query($q, true);
 	}
 	
@@ -119,5 +116,9 @@ print "</pre>";
 
 	public function getAlias() {
 	    return $this->alias;
+	}
+	
+	public function getTable() {
+	    return $this->table;
 	}
 }

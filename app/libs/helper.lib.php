@@ -14,7 +14,7 @@ class Helper {
     }
     
     
-    public function getApp() {
+    static function getApp() {
         global $app;
         if (is_null($app)) {
             require_once(LIBS_PATH . "app.lib.php");
@@ -24,12 +24,12 @@ class Helper {
         return $app;
     }
     
-    public function getTemplate() {
+    static function getTemplate() {
         self::getApp()->requireFile(LIBS_PATH . "tpl-engine/pdf.php");
         return new Template(true);
     }
     
-    public function getDB() {
+    static function getDB() {
         global $db;
     
         if(is_null($db)){
@@ -47,7 +47,7 @@ class Helper {
         return $db;
     }
     
-    public function getHelper($helpername = ''){
+    static function getHelper($helpername = ''){
         $path = LIBS_PATH."helper/".$helpername.'.helper.php';
     
         $hname = $helpername.'Helper';
@@ -56,24 +56,36 @@ class Helper {
         return $name;
     }
     
-    public function getLib($libname = ''){
-        $path = LIBS_PATH.$libname.'.lib.php';
+    static function getLib($name = ''){
+        $path = LIBS_PATH.$name.'.lib.php';
     
-        $hname = 'PDF'.$libname;
+        $name = 'PDF'.$name;
         require_once ($path);
-        return new $hname();
+        
+        return new $name();
     }
     
-    public function getTrait($traitname = ''){
-        $path = LIBS_PATH."trait/".$traitname.'.trait.php';
+    static function getTrait($name = ''){
+        $path = LIBS_PATH."trait/".$name.'.trait.php';
     
-        $hname = $traitname.'Trait';
+        $name = $name.'Trait';
         require_once ($path);
-        return new $hname();
+        
+        return new $name();
+    }
+    
+    static function getBeharior($name = ''){
+        $path = LIBS_PATH."core/behavior/".$name.'.behavior.php';
+    
+        $name = $name.'Behavior';
+        
+        require_once ($path);
+        
+        return new $name();
     }
     
     ///////////////////////////////////////////////
-	public function getRequest(){
+	static function getRequest(){
 		global $request;
 		if (is_null($request)) {
 			require_once(LIBS_PATH . "request.lib.php");
@@ -82,7 +94,7 @@ class Helper {
 		return $request;
 	}
 	
-	public function getView() {
+	static function getView() {
 		global $view;
 		if (is_null($view)) {
 			self::getApp()->requireFile(LIBS_PATH . "view.lib.php");
@@ -92,7 +104,7 @@ class Helper {
 	}
 
 	
-	public function getSession() {
+	static function getSession() {
 	    global $session;
 	    if (is_null($session)) {
 	        self::getApp()->requireFile(LIBS_PATH . "session.lib.php");
@@ -106,7 +118,7 @@ class Helper {
 	
 	
 	
-	public function getHtml() {
+	static function getHtml() {
 	    global $html;
 	    if (is_null($html)) {
 	        self::getApp()->requireFile(LIBS_PATH . "html.lib.php");

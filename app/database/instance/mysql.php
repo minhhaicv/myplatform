@@ -388,10 +388,14 @@ class Mysql extends Sql{
 	    
 	    $fields = '';
 	    foreach($query['fields'] as $key => $value) {
-	        $update = "'{$value}'";
+	        $update = $value;
+	        if(strpos($value, '`') === false)
+	           $update = "'{$value}'";
+	        
 	        if($key == $this->modified) {
 	            $update = $value;
 	        }
+	        
 	        $fields .= "`{$key}` = {$update},";
 	    }
 	     
