@@ -55,14 +55,5 @@
 </ifModule>
 
 
-<IfModule mod_deflate.c>
-AddOutputFilterByType DEFLATE text/html image/gif image/png image/jpeg image/jpg text/plain text/xml text/css text/javascript application/x-javascript
-
-BrowserMatch ^Mozilla/4\.[0678] no-gzip
-BrowserMatch \bOpera !no-gzip
-Header append Vary User-Agent
-</IfModule>
-
-
 #php_flag display_errors off
 #php_flag log_errors off

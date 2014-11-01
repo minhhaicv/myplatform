@@ -47,7 +47,7 @@ try {
 	
 	$runme = $app->initExecutor();
 
-	$runme->auto_run();
+	$runme->navigator();
 }
 
 catch (Exception $e) {
