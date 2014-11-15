@@ -1,23 +1,10 @@
 <?php
 class Helper {
 
-    public function soap() {
-        $options = array(
-                                'location' => 'http://localhost/server/api.php',
-                                'uri'      => 'http://localhost/server/'
-                );
-        
-        
-                 $hdl = new SoapClient(null, $options);
-                 return $hdl->query(999);
-                 return;
-    }
-    
-    
     static function getApp() {
         global $app;
         if (is_null($app)) {
-            require_once(LIBS_PATH . "app.lib.php");
+            require_once(LIB_PATH . "app.lib.php");
             $app = new App();
         }
         
@@ -25,8 +12,20 @@ class Helper {
     }
     
     static function getTemplate() {
-        self::getApp()->requireFile(LIBS_PATH . "tpl-engine/pdf.php");
-        return new Template(true);
+//         self::getApp()->requireFile(LIB_PATH . "tpl-engine/pdf.php");
+//         return new Template(true);
+        self::getApp()->requireFile(LIB_PATH . "tpl-engine/twig/Autoloader.php");
+        Twig_Autoloader::register();
+//         $twig = new Twig_Environment($loader, array('debug' => true));
+        //$loader = new Twig_Loader_Filesystem('webroot/blank/view');
+        
+        $loader = new Twig_Loader_String();
+        
+        return $twig = new Twig_Environment($loader, array(
+                        'cache' => 'tmp/cache/view/blank',
+                        'debug' => true,
+                        'strict_variables' => true
+        ));
     }
     
     static function getDB() {
@@ -38,7 +37,7 @@ class Helper {
             
             $config = $dbconfig->default;
     
-            require_once (APP_PATH . 'database/instance/' . $config['driver'] . ".php");
+            require_once (CORE_PATH . 'database/instance/' . $config['driver'] . ".php");
             	
             $dbName = ucfirst($config['driver']);
             $db = new $dbName($config);
@@ -48,7 +47,7 @@ class Helper {
     }
     
     static function getHelper($helpername = ''){
-        $path = LIBS_PATH."helper/".$helpername.'.helper.php';
+        $path = LIB_PATH."helper/".$helpername.'.helper.php';
     
         $hname = $helpername.'Helper';
         require_once ($path);
@@ -57,16 +56,15 @@ class Helper {
     }
     
     static function getLib($name = ''){
-        $path = LIBS_PATH.$name.'.lib.php';
+        $path = LIB_PATH.$name.'.lib.php';
     
-        $name = 'PDF'.$name;
         require_once ($path);
         
         return new $name();
     }
     
     static function getTrait($name = ''){
-        $path = LIBS_PATH."trait/".$name.'.trait.php';
+        $path = LIB_PATH."trait/".$name.'.trait.php';
     
         $name = $name.'Trait';
         require_once ($path);
@@ -75,7 +73,7 @@ class Helper {
     }
     
     static function getBeharior($name = ''){
-        $path = LIBS_PATH."core/behavior/".$name.'.behavior.php';
+        $path = LIB_PATH."core/behavior/".$name.'.behavior.php';
     
         $name = $name.'Behavior';
         
@@ -88,7 +86,7 @@ class Helper {
 	static function getRequest(){
 		global $request;
 		if (is_null($request)) {
-			require_once(LIBS_PATH . "request.lib.php");
+			require_once(LIB_PATH . "request.lib.php");
 			$request = new Request();
 		}
 		return $request;
@@ -97,7 +95,7 @@ class Helper {
 	static function getView() {
 		global $view;
 		if (is_null($view)) {
-			self::getApp()->requireFile(LIBS_PATH . "view.lib.php");
+			self::getApp()->requireFile(LIB_PATH . "view.lib.php");
 			$view = new View();
 		}
 		return $view;
@@ -107,21 +105,17 @@ class Helper {
 	static function getSession() {
 	    global $session;
 	    if (is_null($session)) {
-	        self::getApp()->requireFile(LIBS_PATH . "session.lib.php");
+	        self::getApp()->requireFile(LIB_PATH . "session.lib.php");
 	        $session = new Session();
 	    }
 	    return $session;
 	}
 	
 	
-	
-	
-	
-	
 	static function getHtml() {
 	    global $html;
 	    if (is_null($html)) {
-	        self::getApp()->requireFile(LIBS_PATH . "html.lib.php");
+	        self::getApp()->requireFile(LIB_PATH . "html.lib.php");
 	        $html = new Html();
 	    }
 	    return $html;

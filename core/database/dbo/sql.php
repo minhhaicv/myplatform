@@ -267,7 +267,7 @@ class Sql{
 	
 	
 	
-	public function getColumn($table = 'pdf_post') {
+	public function getColumn($table = '') {
 	    $sql = "DESCRIBE {$table}";
 	    $query = $this->_connection->prepare($sql);
 	    $query->execute();

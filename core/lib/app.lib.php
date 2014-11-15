@@ -2,7 +2,7 @@
 class App {
     
     public function __construct() {
-        $this->skin = APPLICATION_TYPE == 'backend' ? 'backend' : 'chuyentrang';
+        $this->skin = '';
         $this->language = 'vi';
         
         $this->basic();
@@ -20,62 +20,58 @@ class App {
     public function basic() {
         global $config;
     
-        $flag = array('backend'=>'admin', 'frontend'=>'index');
-        if(1) {
-            $config->base_url = $config->vars['board_url'].'/';
-            if(APPLICATION_TYPE=='backend'){
-                $flag['backend'] = 'backend';
-                $config->base_url = $config->vars['board_url'].'/'.$flag[APPLICATION_TYPE].'/';
-            }
-        } else $config->base_url = $config->vars['board_url'].'/'.$flag[APPLICATION_TYPE].'.php?request=';
+        $config->base_url = $config->vars['board_url'].'/';
     
-        $config->vars['img'] = $config->vars['cdn']."/".$this->skin()."/img";
+//         $config->vars['img'] = $config->vars['cdn']."/".$this->skin()."/img";
     }
     
 	public function import($type = '', $name = array()) {
 	    global $config;
 	    
+	    $map = array(
+	    	      'scaffold' => LIB_PATH . 'scaffold/'
+	    );
+	    
 		foreach($name as $value) {
-		    $path = $value.'/'.$value.'.'.$type.'.php';
-		    
-			$path = CONTROLLER_PATH.$path;
-           
+		    $path = $map[$type].$value.'.php';
+            
 			$this->requireFile($path);
 		}
 	}
 	
-	public function requireFile($filePath="", $requireOnce=true) {
+	public function requireFile($filePath="", $once=true) {
 		if(!file_exists($filePath)) {
-			throw new Exception(sprintf('The file <b>%s</b> does not exist!', $filePath));
+			throw new Exception(sprintf('The file [%s] does not exist!', $filePath));
 		}
 		
-		if($requireOnce){
+		if($once){
 			try{
 				return require_once($filePath);
 			}catch(Exception $e){
-				throw new Exception(sprintf('Cannot import <b>%s</b> by require_once!', $filePath));
+				throw new Exception(sprintf('Cannot import [%s] by require_once!', $filePath));
 			}
-		} else {
-			try{
-				return require($filePath);
-			}catch(Exception $e){
-				throw new Exception(sprintf('Cannot import <b>%s</b> by require!', $filePath));
-			}
+		} 
+		
+		try{
+		    return require($filePath);
+		}catch(Exception $e){
+		    throw new Exception(sprintf('Cannot import [%s] by require!', $filePath));
 		}
 	}
 
     public function initExecutor() {
         global $request;
+     
+        $branch = $request->branch;
         $module = $request->query['module'];
+        $path = $module . "/" . $module . ".".$branch.".php";
         
-        $path = $module . "/" . $module . ".".APPLICATION_TYPE.".php";
-        
-        $path = CONTROLLER_PATH . $path;
+        $path = CORE_PATH . "controller/" . $path;
         
         $this->requireFile($path);
-        $class = $module."_".APPLICATION_TYPE;
+        $class = $module."_".$branch;
         if(!class_exists($class))
-            throw new Exception(sprintf('The class <b>%s</b> does not exist in the file <b>%s</b>!', $runme_class, $runme_path));
+            throw new Exception(sprintf('The class <b>%s</b> does not exist in the file [%s]!', $runme_class, $runme_path));
        
         return new $class();
     }
@@ -83,34 +79,5 @@ class App {
     public function finish() {
         Helper::getDB()->disconnect();
         exit();
-    }
-
-    function redirect($url, $type = '301'){
-        global $config;
-        $url = str_replace("&amp;", "&", $url);
-    
-        switch($type){
-        	case 'html':
-        	    @flush();
-        	    echo ("<html><head><meta http-equiv='refresh' content='2; url=".$url."'></head><body></body></html>");
-        	    break;
-        	case 'refresh':
-        	    header("refresh: 2; url=".$url);
-        	    break;
-        	case '302':
-        	    @header("HTTP/1.1 302 Moved Permanently");
-        	    @header("location: ".$url);
-        	    break;
-        	case '404':
-        	    @header('HTTP/1.1 404 Not Found');
-        	    @header("location: ".$url);
-        	    break;
-        	default:
-        	    @header("HTTP/1.1 301 Moved Permanently");
-        	    @header("location: ".$url);
-        	    break;
-        }
-    
-        $this->finish();
     }
 }

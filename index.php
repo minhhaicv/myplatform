@@ -1,34 +1,81 @@
 <?php
+require_once "./config/constant.php";
+require_once CORE_PATH."global.php";
 
-require_once "./app/config/constant.php";
-require_once "./app/global.php";
+session_start();
 
+$mem = memory_get_usage();
+$time = microtime(true);
 
-$uri = $_SERVER['REQUEST_URI'];
-if(strpos($uri, '/page/') !== false){
-	$url = $_SERVER['HTTP_HOST'].str_replace('/page/', '/trang-', $uri);
-	$url = str_replace('.html', '', $url);
-	@header("HTTP/1.1 301 Moved Permanently");
-	@header("location: http://".$url);
-	exit();
+try {
+    global $meta;
+
+    require_once CONFIG_PATH."config.php";
+    $config = new config();
+
+    require_once LIB_PATH.'helper.lib.php';
+
+    $db = Helper::getDB(true);
+    $db->connect();
+
+    register_shutdown_function('deconstructor');
+
+    Helper::getApp();
+    Helper::getRequest();
+
+    $app->import('scaffold', array("controller", "model", "entity"));
+    
+    $request->analyse();
+
+    $app->import('scaffold', array("controller.".$request->branch));
+
+    Helper::getView();
+
+    global $template;
+    $template = Helper::getTemplate();
+print "<pre>";
+print_r($config);
+print "</pre>";
+//     $app->requireFile(LIBS_PATH."components/authorize.com.php");
+//     $authorize = new authorizeComponent();
+
+//     $authorize->authorizeBackend();
+
+//     $html = Helper::getHelper('html');
+
+//     $app->requireFile(LIBS_PATH . 'tmp.lib.php');
+//     $tmp = new Tmp();
+
+    $runme = $app->initExecutor();
+
+    $runme->navigator();
 }
 
-if(CACHED) {
-	$uri = str_replace('/', '#', $_SERVER['REQUEST_URI']);
-	$htmlfile = CACHE_PATH."html/".$uri.".html";
-	
-	if(file_exists($htmlfile)){
-		$time = substr(file_get_contents($htmlfile), 0, 10);
-		if($time >= time() - 3600){
-			if(file_exists($htmlfile)){
-				ob_start('ob_gzhandler');
-				echo substr(file_get_contents($htmlfile), 10); 
-				exit;
-			}
-		}
-		@unlink($htmlfile);
-	}
+catch (Exception $e) {
+    $message= "<div >
+    Error: {$e->getMessage()}<br />
+    Line: {$e->getLine()}<br />
+    File: {$e->getFile()}<br />
+    Trace: <pre>{$e->getTraceAsString()}</pre><br />
+    </div>";
+    print "<pre>";
+    print_r($message);
+    print "</pre>";
+    // 	$app->finish();
+    exit;
 }
 
-define('APPLICATION_TYPE', 'frontend');
-require_once ROOT_PATH."main.php";
+if(Helper::getRequest()->is('ajax')) {
+    print $runme->getOutput();
+    $app->finish();
+}
+
+$output = $runme->getOutput();
+$layout = $runme->getLayout();
+
+$view->render($output, $layout);
+
+print_r(array(
+'memory' => (memory_get_usage() - $mem) / (1024 * 1024),
+'seconds' => microtime(TRUE) - $time
+));

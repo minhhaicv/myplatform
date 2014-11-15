@@ -25,7 +25,7 @@
  * @package       Cake.Model.Datasource.Database
  */
 
-require (APP_PATH . 'database/dbo/sql.php');
+require (CORE_PATH . 'database/dbo/sql.php');
 
 
 class Mysql extends Sql{
