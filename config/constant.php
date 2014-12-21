@@ -3,18 +3,17 @@
 // USER CONFIGURABLE ELEMENTS
 //-----------------------------------------------
 // Root path
-define ( 'ROOT_PATH'		, "./" );
 
-define ( 'CORE_PATH'		, ROOT_PATH . "core/" );
+define('DS', DIRECTORY_SEPARATOR);
 
-define ( 'CONFIG_PATH'		, ROOT_PATH . "config/" );
-
-define ( 'LIB_PATH'		, CORE_PATH . 'lib/' );
-// define ( 'CONTROLLER_PATH'	, APP_PATH . 'controller/' ); // controller
+define( 'ROOT'		, "." . DS );
+define( 'CONFIG'	, ROOT . "config" . DS );
+define( 'MP'		, ROOT . "mp" . DS );
+define( 'LIB'		, MP . 'lib' . DS );
 
 //////
 
-define ( "TMP_PATH"		    , ROOT_PATH . 'tmp/' );
+define ( "TMP_PATH"		    , ROOT . 'tmp/' );
 
 // error_reporting ( E_ERROR | E_WARNING | E_PARSE );
 // error_reporting(1);

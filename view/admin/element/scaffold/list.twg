@@ -1,0 +1,24 @@
+<table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th><input type='checkbox' /></th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Index</th>
+            <th>last modified</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in data.list %}
+        <tr>
+            <td><input type='checkbox' /></td>
+            <td>{{ attribute(item, alias).title }}</td>
+            <td>{{ attribute(data.category, attribute(item, alias).category_id).category.title }}</td>
+            <td>{{ attribute(item, alias).status }}</td>
+            <td>{{ attribute(item, alias).index }}</td>
+            <td>{{ attribute(item, alias).modified }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
