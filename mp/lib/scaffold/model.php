@@ -85,14 +85,39 @@ class model{
         return $result;
     }
 
-    function blank() {
-        $blank = array();
-        $fields = $this->getColumn();
+    public function delete($condition = '') {
+        $option = array(
+                        'fields' => array('deleted' => 1),
+                        'where' => $condition
+        );
+
+        return $this->update($option);
+    }
+
+    public function save($data) {
+        if(empty($data[$this->primaryKey]))
+            return $this->create($data);
+
+        $option = array(
+                        'fields' => $data,
+                        'where' => $this->primaryKey . " = ".$data[$this->primaryKey]
+        );
+
+        return $this->update($option);
+    }
+
+    public function init($fields = array()) {
+        $value = array('status' => 1);
+        $default = array();
+
+        if(empty($fields))
+            $fields = $this->getColumn();
+
         foreach($fields as $f) {
-            $blank[$f] = '';
+            $default[$f] = empty($value[$f]) ? '' : $value[$f];
         }
 
-        return array($this->getAlias() => $blank);
+        return array($this->getAlias() => $default);
     }
 
 ///////////////////////////////////////////////////////////////
@@ -107,8 +132,7 @@ class model{
         return $db->query($q);
     }
 
-
-    public function getQueriesLog($full = false) {
+    public function getQueries($full = false) {
         global $db;
 
         $log = $db->getLog();
@@ -162,14 +186,12 @@ class model{
     public function getColumn() {
         global $db;
 
-        return $db->getColumn();
+        return $db->getColumn($this->table);
     }
 
     protected $table 			= "";
     protected $alias 			= "";
     protected $primaryKey		= "";
-
-
 
 
     function __construct($table='', $alias = '', $primaryKey='id'){
@@ -188,5 +210,9 @@ class model{
 
     public function getTable() {
         return $this->table;
+    }
+
+    public function getPrimaryKey() {
+        return $this->primaryKey;
     }
 }

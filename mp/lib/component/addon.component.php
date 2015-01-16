@@ -4,9 +4,9 @@ class addonComponent {
     public function get() {
         global $request;
 
-        $branch = $request->branch;
+        $channel = $request->channel;
 
-        return $this->$branch();
+        return $this->$channel();
     }
 
     function frontend() {

@@ -1,0 +1,9 @@
+<div class='row'>
+    <h3 class="page-header">Post</h3>
+</div>
+
+<div class="box-content nopadding">
+    {% include 'element/scaffold/buttons.twg' %}
+    {% include 'element/scaffold/list.twg' %}
+    {% include 'element/scaffold/paginator.twg' %}
+</div>

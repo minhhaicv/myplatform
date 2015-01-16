@@ -22,14 +22,10 @@ try {
     Helper::lib('request');
 
     Helper::scaffold(array("controller", "model", "entity"));
-
-    $request->analyse();
-
-    Helper::scaffold(array("controller.".$request->branch));
+    $request->conduct();
 
     Helper::lib('view');
     Helper::template();
-
 
     $app->execute();
 }

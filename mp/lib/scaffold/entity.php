@@ -4,8 +4,7 @@ class entity {
         if ($model) {
             global $app;
 
-            $app->import('model', array($model));
-            $this->model = new $model();
+            $this->model = $app->load('model', $model);
         }
     }
 

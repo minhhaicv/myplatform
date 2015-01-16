@@ -14,7 +14,10 @@ class post_backend extends backend {
                     $this->add();
                 break;
             case 'edit':
-                     $this->edit($request->query[0]);
+                     $this->edit($request->query[2]);
+                break;
+            case 'delete':
+                    $this->delete();
                 break;
             default :
                     $this->main();
@@ -22,143 +25,149 @@ class post_backend extends backend {
         }
     }
 
-
-    public function main($category = '') {
-            global $app, $request;
-
-            $entity = $app->load('entity', 'category');
-
-            $data = array();
-
-            $query = explode('-', $category);
-            $catId = abs(intval($query[count($query)-1]));
-
-            if(empty($catId)) $catId = $entity->root('post');
-
-            $lists = $entity->extract($catId);
-
-            $page = empty($request->query['page']) ? 1 : $request->query['page'];
-
-            $alias = $this->model->getAlias();
-
-            $option = array (
-                            'select' => "{$alias}.id, {$alias}.title, {$alias}.status, {$alias}.index, {$alias}.modified, {$alias}.category_id",
-                            'where'  => "{$alias}.deleted = 0 AND category_id IN (" . implode(',', array_keys($lists)) . ')',
-                            'order'  => "{$alias}.id desc",
-                            'page'   => $page,
-            );
-
-            $pager = array();
-
-            $data['category'] = $lists;
-            $data['list']     = $this->paginate($option, $pager);
-            $data['pager']    = $pager;
-print "<pre>";
-print_r($this->model->getQueriesLog());
-print "</pre>";
-            $this->render('main.twg', compact('data', 'alias'));
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    function edit($id = 0) {
+    public function delete() {
         global $request;
 
-        $id = intval($id);
+        if(!empty($request->data[$this->model->getAlias()])) {
+            $target = implode(',', $request->data[$this->model->getAlias()]);
 
-        if(empty($request->data['post'])) {
-            $alias = $this->model->getAlias();
-            $fields =  "{$alias}.id, {$alias}.title, {$alias}.content, {$alias}.status";
+            $condition = 'id IN (' . $target . ')';
 
-            $data = $this->model->findById($id);
-            if(empty($target)) {
-                $this->output = 'redirect to error page';
-            }
-
-            return $this->output = $this->view->form($data);
+            $this->model->delete($condition);
         }
 
-        $this->_edit();
+        return $this->redirect(Helper::get('url')->generate());
     }
 
-    function _edit() {
+
+    public function main($category = '') {
         global $app, $request;
 
-        $app->import('entity', array('seo'));
-        $seo = new seo_entity();
+        $entity = $app->load('entity', 'category');
 
-        $request->data['seo']['id'] = 425;
-        if(empty($request->data['seo']['id'])) {
-           $seoId = $seo->create($request->data['seo']);
-           $request->data['post']['seo_id'] = $seoId;
+        $data = array();
+
+        $query = explode('-', $category);
+        $catId = abs(intval($query[count($query)-1]));
+
+        if(empty($catId)) $catId = $entity->root($this->model->getAlias());
+
+        $lists = $entity->extract($catId);
+
+        $page = empty($request->query['page']) ? 1 : $request->query['page'];
+
+        $alias = $this->model->getAlias();
+
+        $option = array (
+                        'select' => "{$alias}.id, {$alias}.title, {$alias}.status, {$alias}.index, {$alias}.modified, {$alias}.category_id",
+                        'where'  => "{$alias}.deleted = 0 AND category_id IN (" . implode(',', array_keys($lists)) . ')',
+                        'order'  => "{$alias}.id desc",
+                        'page'   => $page,
+        );
+
+        $data = $this->paginate($option, true);
+        $data['category'] = $lists;
+
+        $this->render('main', compact('data'));
+    }
+
+    public function edit($id = 0) {
+        global $request, $app;
+
+        $id = intval($id);
+        $option = array();
+
+        if(!empty($request->data[$this->model->getAlias()])) {
+            $this->_edit();
         }
+
+        $alias = $this->model->getAlias();
+        $fields =  "{$alias}.id, {$alias}.title, {$alias}.category_id, {$alias}.index, {$alias}.intro, {$alias}.content, {$alias}.status, {$alias}.seo_id";
+
+        $target = $this->model->findById($id, $fields);
+        if(empty($target)) {
+            return $this->redirect(Helper::get('url')->notfound());
+        }
+
+        $target = array_merge($target, $this->getSEOInstance($target[$alias]['seo_id']));
+
+        $option['category'] = $this->getCategory($alias, '&nbsp;&nbsp;&nbsp;&nbsp;');
+
+        return $this->render('add_edit_form', compact('target', 'option'));
+    }
+
+    public function _edit() {
+        global $app, $request;
 
         $option = array(
-                      'fields' => $request->data['post'],
-                      'where' => "id = ".$request->data['post']['id']
+                        'fields' => $request->data[$this->model->getAlias()],
+                        'where' => "id = " . $request->data[$this->model->getAlias()]['id']
         );
+
         $flag = $this->model->update($option);
+        if($flag == false) return false;
 
-        if(!$flag) {
-            echo 1;exit;
-            //redirect to edit page.
-            return $this->edit();
+        $lastInsertId = 0;
+        $flag = $this->saveSEOInstance($request->data['seo'], $request->data[$this->model->getAlias()], 'detail', $lastInsertId);
+        if($flag == false) return false;
+
+        if(empty($request->data['seo']['id'])) {
+            $option = array (
+                        'fields' => array('seo_id' => $lastInsertId),
+                        'where' => "id = " . $request->data[$this->model->getAlias()]['id']
+                    );
+
+            return $this->model->update($option);
         }
 
-        $seo->update($request->data['post'], $request->data['seo']);
-        return $this->output = 'redirect to index';
+        return true;
     }
 
-
-    function add() {
+    public function add() {
         global $app, $request;
 
-        if(empty($request->data['post'])) {
-            $app->import('entity', array('category'));
-            $entity = new category_entity();
-            $lists = $entity->getBranch('post');
+        $option = array();
+        $alias = $this->model->getAlias();
 
-            $data = $this->model->blank();
+        $target = $this->model->init();
+        if(!empty($request->data[$alias])) {
+            $flag = $this->_add();
 
-            return $this->output = $this->view->form($data);
+            if($flag) return $this->redirect(Helper::get('url')->generate());
+
+            $target = $request->data;
         }
 
-        $this->_add();
+        $option['category'] = $this->getCategory($alias, '&nbsp;&nbsp;&nbsp;&nbsp;');
+
+        $target = array_merge($target, $this->getSEOInstance());
+
+        return $this->render('add_edit_form', compact('target', 'option'));
     }
 
-    function _add() {
-        global $app, $request;
+    public function _add($affact = array()) {
+        global $request;
 
-        $app->import('entity', array('seo'));
-        $seo = new seo_entity();
+        $lastInsertId = 0;
 
-        $seoId = $seo->create($request->data['seo']);
+        $flag = $this->model->create($request->data[$this->model->getAlias()]);
+        if($flag == false) return false;
 
-        $request->data['seo']['id'] = $seoId;
-        $request->data['post']['seo_id'] = $seoId;
+        $lastInsertId = $this->model->lastInsertId();
 
-        $flag = $this->model->create($request->data['post']);
+        $request->data[$this->model->getAlias()]['id'] = $lastInsertId;
+        $affact[$this->model->getAlias()] = $request->data[$this->model->getAlias()]['seo_id'] = $lastInsertId;
 
-        if(!$flag) {
-            return $this->add($request->data['post']);
-        }
+        $flag = $this->saveSEOInstance($request->data['seo'], $request->data[$this->model->getAlias()], 'detail', $lastInsertId);
+        if($flag == false) return false;
 
-        $id = $this->model->lastInsertId();
-        $request->data['post']['id'] = $id;
+        $affact['seo'] = $lastInsertId;
 
-        $seo->update($request->data['post'], $request->data['seo'], array('fields' => array('url'), 'prefix' => "post/detail/"));
-        return $this->output = 'redirect to index';
+        $option = array(
+                        'fields' => array('seo_id' => $lastInsertId),
+                        'where' => "id = ".$affact[$this->model->getAlias()]
+        );
+
+        return $this->model->update($option);
     }
-
 }

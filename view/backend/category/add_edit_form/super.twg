@@ -1,0 +1,18 @@
+<h4>[Branch]</h4>
+
+<form class="form-inline" method='post' enctype="multipart/form-data">
+    {% include 'element/scaffold/add_edit_form/error.twg' %}
+
+    <input type='hidden' name='{{ alias }}[id]' value='{{ attribute(target, alias).id }}' />
+    <table class="table table-bordered highlight">
+        <tr>
+            <td>
+                <label for="title" class="control-label">Branch</label>
+                <input class='form-control' id='title' name='{{ alias }}[title]' value='{{ target is defined ? attribute(target, alias).title }}'/>
+                <label for="slug" class="control-label">Slug</label>
+                <input class='form-control' id='slug'  name='{{ alias }}[slug]' value='{{ target is defined ? attribute(target, alias).slug }}'/>
+                <input type="submit" class="btn btn-primary" value='Save' />
+            </td>
+        </tr>
+    </table>
+</form>

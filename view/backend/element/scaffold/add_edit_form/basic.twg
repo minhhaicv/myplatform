@@ -1,0 +1,66 @@
+<input type='hidden' name='{{ alias }}[id]' value='{{ attribute(target, alias).id }}' />
+
+<table class="table table-bordered formTable">
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="title">Title</label> <span
+            class="required">required</span></th>
+        <td><input class='form-control' name='{{ alias }}[title]' type='text' id='title' value='{{ attribute(target, alias).title  }}' /></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="index">Index</label></th>
+        <td>
+            <label class="inline left-inline">
+                <input id='index' type='text' class="form-control" name='{{ alias }}[index]' value='{{ attribute(target, alias).index }}' />
+            </label>
+
+            {% for value, status in ['draft', 'publish'] %}
+            <label class="radio-inline">
+                <input type="radio" value="{{ value }}" name='{{ alias }}[status]' {% if value == attribute(target, alias).status %} checked='checked' {% endif %}/>
+                {{ status }}
+            </label>
+            {% endfor %}
+        </td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="category">Category</label></th>
+        <td>
+            <select class="form-control" name='{{ alias }}[category_id]'>
+                {% for key, value in option.category %}
+                <option value="{{ key }}" {% if key == attribute(target, alias).category_id %} selected='selected' {% endif %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="intro">Intro</label></th>
+        <td><textarea id='intro' class="editor-intro form-control" rows="3" name="{{ alias }}[intro]">{{ attribute(target, alias).intro  }}</textarea></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="content">Content</label></th>
+        <td><textarea id='content' class="editor-content form-control" rows="3" name="{{ alias }}[content]">{{ attribute(target, alias).content  }}</textarea></td>
+    </tr>
+</table>
+
+<script>
+    $(document).ready(function() {
+        $('.editor-intro').summernote(
+            {
+                height: 100,
+                minHeight: null,
+                maxHeight: null,
+            }
+        );
+
+        $('.editor-content').summernote(
+            {
+                height: 300,                 // set editor height
+                minHeight: null,             // set minimum height of editor
+                maxHeight: null,             // set maximum height of editor
+            }
+        );
+    });
+</script>

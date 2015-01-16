@@ -15,7 +15,29 @@ class treeBehavior extends Model{
         return $this;
     }
 
-    public function flat($root, $spacer = '', $display = 'title') {
+    public function indent(&$data = array(), $spacer = '', $display = 'title') {
+        $right = array();
+
+        $result = array();
+        foreach($data as $key => $row) {
+            if (count($right) > 0) {
+                // check if we should remove a node from the stack
+
+                while (isset($right[count($right)-1]) && $right[count($right)-1] < $row[$this->alias][$this->right]) {
+                    array_pop($right);
+                }
+            }
+
+            // display indented node title
+            $data[$key][$this->alias][$display] = $result[$key] = str_repeat($spacer, count($right)).$row[$this->alias][$display];
+
+            $right[] = $row[$this->alias][$this->right];
+        }
+
+        return $result;
+    }
+
+    public function flat($root, $spacer = '', $display = 'title', $level = 1) {
         $option = array (
                         'select' => "{$this->alias}.{$this->left}, {$this->alias}.{$this->right}",
                         'where' => "{$this->alias}.id = '{$root}' AND {$this->alias}.deleted = 0",
@@ -29,45 +51,48 @@ class treeBehavior extends Model{
                     'where'  => "{$this->alias}.{$this->left} BETWEEN {$root[$this->alias][$this->left]} AND {$root[$this->alias][$this->right]} AND {$this->alias}.deleted = 0",
                     'order'  => "{$this->alias}.{$this->left} ASC"
         );
-        $data = $this->find($option);
 
-        $right = array();
-
-        $result = array();
-        foreach($data as $key => $row) {
-            if (count($right)>0) {
-                // check if we should remove a node from the stack
-
-                while ($right[count($right)-1] < $row[$this->alias][$this->right]) {
-                    array_pop($right);
-                }
-            }
-
-            // display indented node title
-            $result[$key] = str_repeat($spacer,count($right)).$row[$this->alias][$display];
-
-            $right[] = $row[$this->alias][$this->right];
+        if ($level > 1) {
+            $option['where'] = "{$root[$this->alias][$this->left]} < {$this->alias}.{$this->left} AND {$this->alias}.{$this->right} < {$root[$this->alias][$this->right]} AND {$this->alias}.deleted = 0";
         }
 
-        return $result;
+        $data = $this->find($option);
+
+        return $this->indent($data, $spacer, $display);
     }
 
-    public function rebuild($parent, $left) {
+    //rebuild mttp tree
+    public function rebuild() {
+        $options = array(
+                        'select' => "{$this->alias}.id, {$this->alias}.lft",
+                        'where'  => "{$this->alias}.parent_id = 0",
+        );
+
+        $root = $this->find($options, 'first');
+        if(empty($root)) return false;
+
+        $lft = empty($root[$this->alias]['lft']) ? 1 : $root[$this->alias]['lft'];
+        $this->_rebuild($root[$this->alias]['id'], $lft);
+
+        return true;
+    }
+
+    public function _rebuild($parent, $left) {
         // the right value of this node is the left value + 1
         $right = $left+1;
 
         // get all children of this node
         $option = array (
                         'select' => "{$this->alias}.id",
-                        'where' => "{$this->alias}.parent_id = '{$parent}' AND {$this->alias}.deleted = 0",
+                        'where'  => "{$this->alias}.parent_id = '{$parent}' AND {$this->alias}.deleted = 0",
+                        'order'  => "{$this->alias}.index"
         );
 
         $result = $this->find($option);
 
         foreach($result as $row) {
-            $right = $this->rebuild($row[$this->alias]['id'], $right);
+            $right = $this->_rebuild($row[$this->alias]['id'], $right);
         }
-
 
         $option = array(
                        'fields' => array($this->left => $left, $this->right => $right),
@@ -110,7 +135,7 @@ class treeBehavior extends Model{
         $this->create($info);
     }
 
-    public function delete($target) {
+    public function delete($target = '') {
         $option = array(
                   'select' => "{$this->alias}.{$this->left}, {$this->alias}.{$this->right}"
                );
@@ -169,9 +194,12 @@ class treeBehavior extends Model{
 
         $option = array_merge($option, $custom);
 
+        $option['select'] .= ", {$this->alias}.lft, {$this->alias}.rght";
+
         return $this->find($option);
     }
 
+    //build tree from parent id
     public function build($data = array(), $root = 0) {
         $new = array();
         foreach ($data as $item){
@@ -179,18 +207,6 @@ class treeBehavior extends Model{
         }
 
         return $this->_build($new, array($data[$root]));
-    }
-
-    private function _merge($option = array(), $custom = array()) {
-        if($custom) {
-            foreach($option as $key => $value) {
-                if(empty($custom[$key])) continue;
-
-                $option[$key] = $custom[$key];
-            }
-        }
-
-        return $option;
     }
 
     private function _build(&$list, $parent){

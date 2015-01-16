@@ -1,0 +1,36 @@
+<form id='list-form' method='post'>
+<table class="table table-hover table-bordered ">
+    <thead>
+        <tr>
+            <th class='text-center list-option'>
+                <input class='checkall' type='checkbox' />
+                {{ include('element/scaffold/list-option.twg', {checkall: 'true', 'form': 'list-form'}) }}
+            </th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Index</th>
+            <th>last modified</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in data.list %}
+        <tr>
+            <td class='text-center list-option'>
+                <input class='item' type='checkbox' name='{{ alias }}[{{ attribute(item, alias).id }}]' value='{{ attribute(item, alias).id }}' />
+                {% include 'element/scaffold/list-option.twg' %}
+            </td>
+            <td>
+                <a href='{{ get('url', 'helper').generate('edit', attribute(item, alias).id) }}' title='{{ attribute(item, alias).title }}'>
+                {{ attribute(item, alias).title }}
+                </a>
+            </td>
+            <td>{{ attribute(data.category, attribute(item, alias).category_id).category.title }}</td>
+            <td>{{ attribute(item, alias).status }}</td>
+            <td>{{ attribute(item, alias).index }}</td>
+            <td>{{ attribute(item, alias).modified }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</form>

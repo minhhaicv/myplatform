@@ -1,11 +1,12 @@
 <?php
 
 class view {
-
+    private $ext = '.twg';
 
     public function render($tpl = '', $option = array()) {
         global $template;
 
+        $tpl .= $this->ext;
         return $template->render($tpl, $option);
     }
 
@@ -23,7 +24,7 @@ class view {
 
         $title = 'twig test';
 
-        $layout = 'layout' . DS . $layout . '.twg';
+        $layout = 'layout' . DS . $layout;
 
         echo $this->render($layout, compact('title', 'content', 'addon'));
 

@@ -147,9 +147,10 @@ class Sql{
 
     public function query($query, $nonQuery = false) {
         if($nonQuery) {
-            $return = $this->_execute($query);
+            $return = $this->execute($query);
             return !empty($return);
         }
+
         return $this->fetchAll($query);
     }
 
@@ -265,10 +266,47 @@ class Sql{
 
 
     public function getColumn($table = '') {
-        $sql = "DESCRIBE {$table}";
+        $sql = "DESCRIBE {$table};";
+
         $query = $this->_connection->prepare($sql);
         $query->execute();
         // $results->getColumnMeta($index);
         return $column = $query->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+
+    public function boolean($data, $quote = false) {
+        if ($quote) {
+            return !empty($data) ? '1' : '0';
+        }
+        return !empty($data);
+    }
+
+    public function value($data, $column = null) {
+        switch ($column) {
+            case 'binary':
+                return $this->_connection->quote($data, PDO::PARAM_LOB);
+            case 'boolean':
+                return $this->_connection->quote($this->boolean($data, true), PDO::PARAM_BOOL);
+            case 'string':
+            case 'text':
+                return $this->_connection->quote($data, PDO::PARAM_STR);
+            default:
+                if ($data === '') {
+                    return 'NULL';
+                }
+                if (is_float($data)) {
+                    return strtr(strval($data), array(',' => '.'));
+                }
+
+                if ((is_int($data) || $data === '0') || (
+                        is_numeric($data) && strpos($data, ',') === false &&
+                        $data[0] != '0' && strpos($data, 'e') === false)
+                ) {
+                    return $data;
+                }
+
+                return $this->_connection->quote($data);
+        }
     }
 }

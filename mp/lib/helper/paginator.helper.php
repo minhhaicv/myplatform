@@ -2,7 +2,7 @@
 
 class PaginatorHelper {
 
-    public function paginate($options = array(), $model = null, &$pager = array()) {
+    public function paginate($options = array(), $model = null, $pager = true) {
         $default = array(
                         'page' => 1,
                         'limit' => 10,
@@ -11,6 +11,7 @@ class PaginatorHelper {
         $options = array_merge($default, $options);
         extract($options);
 
+        $return = array();
         $results = $model->find($options, 'all');
 
         if (!$results) {
@@ -29,11 +30,14 @@ class PaginatorHelper {
             throw new NotFoundException();
         }
 
-        if(isset($pager) && $pageCount > 1) {
-            $pager = $this->_pager(array('current' => $page, 'count' => $pageCount));
+        $return['list'] = $results;
+
+        $return['pager'] = array();
+        if($pager && $pageCount > 1) {
+            $return['pager'] = $this->_pager(array('current' => $page, 'count' => $pageCount));
         }
 
-        return $results;
+        return $return;
     }
 
     private function _pager($params) {

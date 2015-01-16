@@ -1,7 +1,6 @@
 <?php
 class htmlHelper{
 
-
     public function js($list = array(), $path = '') {
         if(empty($path)) $path = 'js';
 
@@ -11,7 +10,7 @@ class htmlHelper{
         foreach($list as $item) {
             $src = $path . $item . '.js';
 
-            $result .= '< type="text/javascript" src="'.$src.'"></>';
+            $result .= '<script src="'.$src.'"></script>';
         }
 
         return $result;

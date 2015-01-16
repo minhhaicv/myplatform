@@ -1,0 +1,7 @@
+{% if( option.error is defined ) %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+    {% for message in option.error[alias] %}
+        {{ message }}<br />
+    {% endfor %}
+    </div>
+{% endif %}

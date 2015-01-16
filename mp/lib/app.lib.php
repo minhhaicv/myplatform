@@ -3,12 +3,12 @@ class app {
 
     public $base = '';
     public function __construct() {
-
         $this->basic();
     }
 
 
     public function basic() {
+        $this->requireFile(LIB . 'package' . DS . 'error' . DS . 'exception.php');
     }
 
     public function import($type = '', $name = array()) {
@@ -48,14 +48,14 @@ class app {
     public function execute() {
         global $request, $view;
 
-        $branch = $request->branch;
+        $channel = $request->channel;
         $module = $request->query['module'];
-        $path = $module . "/" . $module . ".".$branch.".php";
+        $path = $module . "/" . $module . ".".$channel.".php";
 
         $path = MP . "controller/" . $path;
 
         $this->requireFile($path);
-        $class = $module."_".$branch;
+        $class = $module."_".$channel;
 
         if(!class_exists($class))
             throw new Exception(sprintf('The class <b>%s</b> does not exist in the file [%s]!', $class, $path));

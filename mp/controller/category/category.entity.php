@@ -3,12 +3,14 @@
 class category_entity extends entity{
     function __construct() {
         parent::__construct('category');
-
-        Helper::get('tree', 'behavior')->load($this->model);
     }
 
     function __destruct(){
         unset($this);
+    }
+
+    public function superRoot() {
+        return $this->model->getSuperRoot();
     }
 
     public function root($branch = '') {
@@ -17,8 +19,8 @@ class category_entity extends entity{
         return current($tmp);
     }
 
-    public function branch($branch = '', $spacer = '', $display = 'title') {
-        return $this->model->tree->flat($this->root($branch), $spacer, $display);
+    public function branch($branch = '', $spacer = '', $display = 'title', $level = 2) {
+        return $this->model->tree->flat($this->root($branch), $spacer, $display, $level);
     }
 
     public function extract($id = '', $childOnly = false, $option = array()) {

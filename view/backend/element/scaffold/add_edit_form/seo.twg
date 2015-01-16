@@ -1,0 +1,30 @@
+<input type='hidden' name='seo[id]' value='{{ target.seo.id }}' />
+
+<table class="table table-bordered formTable">
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="seo-permalink">Permalink</label>
+            <span class="required">required</span></th>
+        <td><input class='form-control' name='seo[alias]' type='text' id='seo-permalink' value='{{ target.seo.alias  }}' /></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="seo-canonical">Canonical</label></th>
+        <td><input class='form-control' name='seo[canonical]' type='text' id='seo-canonical' value='{{ target.seo.canonical  }}' /></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="seo-title">Title</label></th>
+        <td><input class='form-control' name='seo[title]' type='text' id='seo-title' value='{{ target.seo.title  }}' /></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="seo-keyword">Keyword</label> <span
+            class="required">required</span></th>
+        <td><input class='form-control' name='seo[keyword]' type='text' id='seo-keyword' value='{{ target.seo.keyword  }}' /></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="seo-intro">Desc</label></th>
+        <td><textarea id='seo-desc' class="form-control" rows="3" name="seo[desc]">{{ target.seo.desc  }}</textarea></td>
+    </tr>
+</table>

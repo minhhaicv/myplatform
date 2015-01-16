@@ -31,17 +31,18 @@ class Helper {
     }
 
     static function template() {
-        global $template;
+        global $template, $request, $config;
 
         if(is_null($template)) {
+            $folder = $config->view[$request->channel];
+
             self::getApp()->requireFile(LIB . "tpl-engine/twig/Autoloader.php");
             Twig_Autoloader::register();
 
-
-            $loader = new Twig_Loader_Filesystem('./view/admin/');
+            $loader = new Twig_Loader_Filesystem("./view/{$folder}/");
 
             $template = new Twig_Environment($loader, array(
-                                'cache' => 'tmp/cache/view/admin',
+                                'cache' => "tmp/cache/view/{$folder}",
                                 'debug' => true,
                                 'strict_variables' => true,
                                 'autoescape' => false,
@@ -67,7 +68,7 @@ class Helper {
         }
     }
 
-    static function get($name, $type) {
+    static function get($name, $type = 'helper') {
         $path = $type . DS . $name . '.' . $type . '.php';
 
         if(file_exists(ROOT . 'lib' . DS . $path)) {

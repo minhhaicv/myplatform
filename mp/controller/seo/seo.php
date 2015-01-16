@@ -1,8 +1,9 @@
 <?php
-class post extends Model {
+
+class seo extends Model {
 
     function __construct(){
-        parent::__construct('post', 'post');
+        parent::__construct('seo', 'seo');
     }
 
     function __destruct(){
