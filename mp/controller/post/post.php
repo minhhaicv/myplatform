@@ -1,8 +1,8 @@
 <?php
 class post extends Model {
 
-    function __construct(){
-        parent::__construct('post', 'post');
+    function __construct($table = 'post', $alias = 'post'){
+        parent::__construct($table, $alias);
     }
 
     function __destruct(){

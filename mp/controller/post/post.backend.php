@@ -43,7 +43,7 @@ class post_backend extends backend {
     public function main($category = '') {
         global $app, $request;
 
-        $entity = $app->load('entity', 'category');
+        $entity = $app->load('category', 'entity');
 
         $data = array();
 

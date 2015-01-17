@@ -16,7 +16,7 @@ class view {
         $runme->navigator();
 
         $content = $runme->getOutput();
-        $layout = $runme->getLayout();
+        $layout  = $runme->getLayout();
 
         if($layout) {
             $addon = Helper::get('addon', 'component')->get();

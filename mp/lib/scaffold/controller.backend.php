@@ -2,15 +2,14 @@
 
 class backend extends controller{
 
-    public function __construct($model){
-        parent::__construct($model);
+    public function __construct($model, $table = '', $alias = '', $template = ''){
+        parent::__construct($model, $table, $alias, $template);
     }
-
 
     public function getSEOInstance($id = 0) {
         global $app;
 
-        $entity = $app->load('entity', 'seo');
+        $entity = $app->load('seo', 'entity');
 
         return $entity->instance($id);
     }
@@ -18,7 +17,7 @@ class backend extends controller{
     public function saveSEOInstance($data = array(), $target = array(), $type = 'detail', &$lastInsertId = 0) {
         global $app;
 
-        $entity = $app->load('entity', 'seo');
+        $entity = $app->load('seo', 'entity');
 
         $data['url'] = Helper::get("url")->seo($target, $type);
 

@@ -11,29 +11,55 @@ class app {
         $this->requireFile(LIB . 'package' . DS . 'error' . DS . 'exception.php');
     }
 
-    public function import($type = '', $name = array()) {
-        global $config;
+    private function _path($name = '', $folder = '') {
+        $path = $folder . DS . $name . '.php';
+
+        if(file_exists(ROOT . 'lib' . DS . $path)) {
+            $path = ROOT . 'lib' . DS . $path;
+        } else {
+            $path = MP . $path;
+        }
+
+        return $path;
+    }
+
+    public function import($name = array(), $type = 'model') {
+        global $request;
+
+        $subfix = ($type == 'entity') ? $type : $request->channel;
 
         foreach($name as $value) {
-            if($type == 'model') {
-                $path = MP . 'controller' . DS  . $value . DS . $value . '.php';
+            $path = 'controller' . DS  . $value;
 
-                $this->requireFile($path);
-                return;
+            if(in_array($type, array('entity', 'controller'))) {
+                $value = $value . '.' . $subfix;
             }
 
-            $path = MP . 'controller' . DS  . $value . DS . $value . '.' . $type . '.php';
-
+            $path = $this->_path($value, $path);
             $this->requireFile($path);
         }
     }
 
-    public function load($type = '', $name = '') {
-        $this->import($type, array($name));
+    public function uses($name = '', $type = 'model') {
+        $this->import(array($name), $type);
+    }
 
-        if($type == 'model') return new $name();
+    public function load($name = '', $type = 'model', $option = array()) {
+        $this->import(array($name), $type);
 
-        $name = $name . '_' . $type;
+        if($type == 'model') {
+            extract($option);
+
+            if( !(empty($table) && empty($alias)))
+                return new $name ($table, $alias);
+
+            return new $name ();
+        }
+
+        if($type == 'entity') {
+            $name = $name . '_' . $type;
+        }
+
         return new $name();
     }
 

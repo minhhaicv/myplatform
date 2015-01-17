@@ -2,11 +2,10 @@
 
 class category_backend extends backend {
 
-    public function __construct() {
-        global $app;
-        parent::__construct('category');
+    public function __construct($model = 'category', $table = 'category', $alias = 'category', $template = '') {
+        parent::__construct($model, $table, $alias, $template);
 
-        $this->entity = $app->load('entity', 'category');
+        $this->entity = Helper::getApp()->load('category', 'entity');
     }
 
     public function navigator(){

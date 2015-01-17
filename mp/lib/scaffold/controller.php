@@ -1,19 +1,25 @@
 <?php
 class controller{
 
-    function __construct($model = ''){
-        global $app;
+    function __construct($model = '', $table = '', $alias = '', $template = '') {
+        global $request;
 
         if($model){
-            $this->model = $app->load('model', $model);
+            $this->model = Helper::getApp()->load($model, 'model', compact('table', 'alias'));
         }
+
+        if(empty($template)) {
+            $template = $request->query['module'];
+        }
+
+        $this->templateFolder = $template;
     }
 
 
     public function getCategory($alias, $spacer = '&nbsp;&nbsp;&nbsp;&nbsp;', $level = 2, &$entity = null) {
         global $app;
 
-        $entity = $app->load('entity', 'category');
+        $entity = $app->load('category', 'entity');
 
         return $entity->branch($alias, $spacer, 'title', $level);
     }
@@ -49,7 +55,7 @@ class controller{
         global $view, $request;
 
         if(empty($prefix)) {
-            $prefix = $request->query['module'] . DS;
+            $prefix = $this->templateFolder . DS;
         }
 
         $option['alias'] = $this->model->getAlias();
@@ -63,15 +69,13 @@ class controller{
         return $this->output;
     }
 
-    function setModel($model){
-        $this->model = $model;
-    }
-
     function getLayout(){
         return $this->layout;
     }
 
-    protected $output	= NULL;
-    protected $model	= NULL;
+    protected $output	= '';
+    protected $model	= '';
     protected $layout 	= 'default';
+
+    protected $templateFolder = '';
 }

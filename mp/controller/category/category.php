@@ -2,8 +2,9 @@
 
 class category extends Model {
 
-    function __construct(){
-        parent::__construct('category', 'category');
+    function __construct($table = 'category', $alias = 'category') {
+        parent::__construct($table, $alias);
+
         Helper::get('tree', 'behavior')->load($this);
     }
 
