@@ -8,7 +8,7 @@ class app {
 
 
     public function basic() {
-        $this->requireFile(LIB . 'package' . DS . 'error' . DS . 'exception.php');
+        $this->attach(LIB . 'package' . DS . 'error' . DS . 'exception.php');
     }
 
     private function _path($name = '', $folder = '') {
@@ -36,7 +36,7 @@ class app {
             }
 
             $path = $this->_path($value, $path);
-            $this->requireFile($path);
+            $this->attach($path);
         }
     }
 
@@ -44,26 +44,18 @@ class app {
         $this->import(array($name), $type);
     }
 
-    public function load($name = '', $type = 'model', $option = array()) {
-        $this->import(array($name), $type);
-
-        if($type == 'model') {
-            extract($option);
-
-            if( !(empty($table) && empty($alias)))
-                return new $name ($table, $alias);
-
-            return new $name ();
-        }
+    public function load($instance = '', $type = 'model', $arguments = array()) {
+        $this->import(array($instance), $type);
 
         if($type == 'entity') {
-            $name = $name . '_' . $type;
+            $instance = $instance . '_' . $type;
         }
 
-        return new $name();
+        $reflection = new ReflectionClass($instance);
+        return $reflection->newInstanceArgs($arguments);
     }
 
-    public function requireFile($path = "") {
+    public function attach($path = "") {
         try {
             return require_once($path);
         } catch(Exception $e){
@@ -80,12 +72,11 @@ class app {
 
         $path = MP . "controller/" . $path;
 
-        $this->requireFile($path);
+        $this->attach($path);
         $class = $module."_".$channel;
 
         if(!class_exists($class))
             throw new Exception(sprintf('The class <b>%s</b> does not exist in the file [%s]!', $class, $path));
-
 
         $view->finalize(new $class());
     }

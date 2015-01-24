@@ -21,13 +21,14 @@ class backend extends controller{
 
         $data['url'] = Helper::get("url")->seo($target, $type);
 
-        $data['foreign_key'] = $target['id'];
+        $data['foreign_key']      = $target['id'];
         $data['foreign_category'] = $target['category_id'];
 
         $lastInsertId = 0;
         if ($entity->save($data)) {
-            $primaryKey = $entity->model->getPrimaryKey();
-            $lastInsertId = empty($target[$primaryKey]) ? $entity->model->lastInsertId() : $target[$primaryKey];
+            if(empty($data['id']))
+                $lastInsertId = $entity->model->lastInsertId();
+            else $lastInsertId = $data['id'];
 
             return true;
         }

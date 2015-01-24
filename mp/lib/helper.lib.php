@@ -36,7 +36,7 @@ class Helper {
         if(is_null($template)) {
             $folder = $config->view[$request->channel];
 
-            self::getApp()->requireFile(LIB . "tpl-engine/twig/Autoloader.php");
+            self::getApp()->attach(LIB . "tpl-engine/twig/Autoloader.php");
             Twig_Autoloader::register();
 
             $loader = new Twig_Loader_Filesystem("./view/{$folder}/");
@@ -64,7 +64,7 @@ class Helper {
         $path = LIB . 'scaffold' . DS;
 
         foreach($name as $value) {
-            self::getApp()->requireFile($path . $value . '.php');
+            self::getApp()->attach($path . $value . '.php');
         }
     }
 
@@ -77,7 +77,7 @@ class Helper {
             $path = LIB . $path;
         }
 
-        self::getApp()->requireFile($path);
+        self::getApp()->attach($path);
         $name .= ucfirst($type);
 
         return new $name();
@@ -97,7 +97,7 @@ class Helper {
                 $path = LIB . $path;
             }
 
-            self::getApp()->requireFile($path);
+            self::getApp()->attach($path);
             $$name = new $name();
         }
 

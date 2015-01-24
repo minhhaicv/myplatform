@@ -68,14 +68,14 @@ class model{
         $result = array();
 
         if(count($exp) == 1) {
-            $value = strtr($exp[0], array('category.' => ''));
+            $value = strtr($exp[0], array($this->alias.'.' => ''));
 
             foreach( $tmp as $item ) {
                 $result[] = $item[$this->alias][$value];
             }
         } else {
-            $key   = strtr($exp[0], array('category.' => ''));
-            $value = strtr($exp[1], array('category.' => ''));
+            $key   = strtr($exp[0], array($this->alias.'.' => ''));
+            $value = strtr($exp[1], array($this->alias.'.' => ''));
 
             foreach( $tmp as $item ) {
                 $result[$key] = $item[$this->alias][$value];

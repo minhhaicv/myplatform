@@ -37,6 +37,6 @@ class category extends Model {
 
         $tmp = $this->find($option, 'first');
 
-        return $tmp[$alias];
+        return empty($tmp[$alias]) ? array('id' => 0) : $tmp[$alias];
     }
 }

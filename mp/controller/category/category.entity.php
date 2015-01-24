@@ -1,8 +1,8 @@
 <?php
 
 class category_entity extends entity{
-    function __construct() {
-        parent::__construct('category');
+    function __construct($model = 'category', $table = 'category', $alias = 'category') {
+        parent::__construct($model, $table, $alias);
     }
 
     function __destruct(){
@@ -16,6 +16,7 @@ class category_entity extends entity{
     public function root($branch = '') {
         $tmp = $this->model->getBySlug($branch, 'list');
 
+        if (empty($tmp)) return 0;
         return current($tmp);
     }
 

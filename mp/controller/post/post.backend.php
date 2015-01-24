@@ -2,8 +2,8 @@
 
 class post_backend extends backend {
 
-    public function __construct(){
-        parent::__construct('post');
+    public function __construct($model = 'post', $table = 'post', $alias = 'post', $template = '') {
+        parent::__construct($model, $table, $alias, $template);
     }
 
     public function navigator(){
@@ -41,10 +41,9 @@ class post_backend extends backend {
 
 
     public function main($category = '') {
-        global $app, $request;
+        global $request;
 
-        $entity = $app->load('category', 'entity');
-
+        $entity = Helper::getApp()->load('category', 'entity');
         $data = array();
 
         $query = explode('-', $category);
@@ -72,13 +71,13 @@ class post_backend extends backend {
     }
 
     public function edit($id = 0) {
-        global $request, $app;
+        global $request;
 
         $id = intval($id);
         $option = array();
 
         if(!empty($request->data[$this->model->getAlias()])) {
-            $this->_edit();
+            $this->_save($request->data);
         }
 
         $alias = $this->model->getAlias();
@@ -96,42 +95,15 @@ class post_backend extends backend {
         return $this->render('add_edit_form', compact('target', 'option'));
     }
 
-    public function _edit() {
-        global $app, $request;
-
-        $option = array(
-                        'fields' => $request->data[$this->model->getAlias()],
-                        'where' => "id = " . $request->data[$this->model->getAlias()]['id']
-        );
-
-        $flag = $this->model->update($option);
-        if($flag == false) return false;
-
-        $lastInsertId = 0;
-        $flag = $this->saveSEOInstance($request->data['seo'], $request->data[$this->model->getAlias()], 'detail', $lastInsertId);
-        if($flag == false) return false;
-
-        if(empty($request->data['seo']['id'])) {
-            $option = array (
-                        'fields' => array('seo_id' => $lastInsertId),
-                        'where' => "id = " . $request->data[$this->model->getAlias()]['id']
-                    );
-
-            return $this->model->update($option);
-        }
-
-        return true;
-    }
-
     public function add() {
-        global $app, $request;
+        global $request;
 
         $option = array();
         $alias = $this->model->getAlias();
 
         $target = $this->model->init();
         if(!empty($request->data[$alias])) {
-            $flag = $this->_add();
+            $flag = $this->_save($request->data);
 
             if($flag) return $this->redirect(Helper::get('url')->generate());
 
@@ -145,29 +117,38 @@ class post_backend extends backend {
         return $this->render('add_edit_form', compact('target', 'option'));
     }
 
-    public function _add($affact = array()) {
-        global $request;
-
+    protected function _save($data = array(), &$affact = array()) {
         $lastInsertId = 0;
 
-        $flag = $this->model->create($request->data[$this->model->getAlias()]);
+        $flag = $this->model->save($data[$this->model->getAlias()]);
         if($flag == false) return false;
 
-        $lastInsertId = $this->model->lastInsertId();
+        $lastInsertId = empty($data[$this->model->getAlias()]['id']) ? $this->model->lastInsertId() : $data[$this->model->getAlias()]['id'];
 
-        $request->data[$this->model->getAlias()]['id'] = $lastInsertId;
-        $affact[$this->model->getAlias()] = $request->data[$this->model->getAlias()]['seo_id'] = $lastInsertId;
+        $affact[$this->model->getAlias()] = $lastInsertId;
 
-        $flag = $this->saveSEOInstance($request->data['seo'], $request->data[$this->model->getAlias()], 'detail', $lastInsertId);
+        if(empty($data['seo']) == false)
+            return $this->_saveSEO($data, $affact);
+
+        return $flag;
+    }
+
+    protected function _saveSEO($data, &$affact = array()) {
+        $master = $affact[$this->model->getAlias()];
+        $data[$this->model->getAlias()]['id'] = $master;
+
+        $lastInsertId = 0;
+        $flag = $this->saveSEOInstance($data['seo'], $data[$this->model->getAlias()], 'detail', $lastInsertId);
         if($flag == false) return false;
 
         $affact['seo'] = $lastInsertId;
 
         $option = array(
                         'fields' => array('seo_id' => $lastInsertId),
-                        'where' => "id = ".$affact[$this->model->getAlias()]
+                        'where' => "id = " . $master
         );
 
         return $this->model->update($option);
     }
+
 }
