@@ -1,6 +1,6 @@
 <?php
 
-class seo_entity extends entity{
+class seoEntity extends entity{
     function __construct() {
         parent::__construct('seo');
     }

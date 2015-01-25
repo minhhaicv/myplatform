@@ -69,16 +69,19 @@ class Helper {
     }
 
     static function get($name, $type = 'helper') {
-        $path = $type . DS . $name . '.' . $type . '.php';
+        return self::getApp()->load($name, $type);
+    }
 
-        if(file_exists(ROOT . 'lib' . DS . $path)) {
-            $path = ROOT . 'lib' . DS . $path;
-        } else {
-            $path = LIB . $path;
+    static function forceGet($name, $type = 'helper') {
+        $path = $name . '.' . $type . '.php';
+        if($type != 'lib') {
+            $name .= ucfirst($type);
+            $path = $type . DS . $path;
         }
 
+        $path = self::extendLib($path);
+
         self::getApp()->attach($path);
-        $name .= ucfirst($type);
 
         return new $name();
     }
@@ -89,18 +92,17 @@ class Helper {
         }
 
         if(is_null($$name)) {
-            $path = $name.'.lib.php';
-
-            if(file_exists(ROOT . 'lib' . DS . $path)) {
-                $path = ROOT . 'lib' . DS . $path;
-            } else {
-                $path = LIB . $path;
-            }
-
-            self::getApp()->attach($path);
-            $$name = new $name();
+            $$name = self::forceGet($name, 'lib');
         }
 
         return $$name;
     }
+
+    static function extendLib($path) {
+        if(file_exists(ROOT . 'lib' . DS . $path))
+            return ROOT . 'lib' . DS . $path;
+
+        return LIB . $path;
+    }
+
 }

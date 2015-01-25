@@ -1,6 +1,6 @@
 <?php
 
-class category_backend extends backend {
+class categoryBackend extends backend {
 
     public function __construct($model = 'category', $table = 'category', $alias = 'category', $template = '') {
         parent::__construct($model, $table, $alias, $template);

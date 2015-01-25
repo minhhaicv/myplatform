@@ -11,24 +11,23 @@ class view {
     }
 
     public function finalize($runme) {
-        global $app;
-
         $runme->navigator();
 
         $content = $runme->getOutput();
         $layout  = $runme->getLayout();
 
-        if($layout) {
+        if(empty($layout)) {
+            echo $content;
+        } else {
+            $title = 'twig test';
+
             $addon = Helper::get('addon', 'component')->get();
+            $layout = 'layout' . DS . $layout;
+
+            echo $this->render($layout, compact('title', 'content', 'addon'));
         }
 
-        $title = 'twig test';
-
-        $layout = 'layout' . DS . $layout;
-
-        echo $this->render($layout, compact('title', 'content', 'addon'));
-
-        $app->finish();
+        Helper::getApp()->finish();
         return ob_get_clean();
     }
 }

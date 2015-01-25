@@ -2,7 +2,7 @@
 
 Helper::getApp()->uses('category', 'controller');
 
-class menu_backend extends category_backend {
+class menuBackend extends categoryBackend {
 
     public function __construct() {
         parent::__construct('category', 'menu', 'menu', 'menu');

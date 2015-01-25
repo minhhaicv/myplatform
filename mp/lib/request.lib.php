@@ -183,10 +183,8 @@ class request {
         return $config->vars['board_url'];
     }
 
-
-
     public function conduct() {
-        global $request, $config;
+        global $request;
 
         $input = array();
 
@@ -201,7 +199,7 @@ class request {
             $output['data'] = $_POST;
         }
 
-        $output = Helper::get('sanitize', 'helper')->clean($output);
+        $output = Helper::forceGet('sanitize', 'helper')->clean($output);
 
         foreach ($output as $key => $info) {
             $request->$key = $info;

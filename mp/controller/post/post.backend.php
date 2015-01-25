@@ -1,6 +1,6 @@
 <?php
 
-class post_backend extends backend {
+class postBackend extends backend {
 
     public function __construct($model = 'post', $table = 'post', $alias = 'post', $template = '') {
         parent::__construct($model, $table, $alias, $template);

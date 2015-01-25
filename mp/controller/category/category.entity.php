@@ -1,6 +1,6 @@
 <?php
 
-class category_entity extends entity{
+class categoryEntity extends entity{
     function __construct($model = 'category', $table = 'category', $alias = 'category') {
         parent::__construct($model, $table, $alias);
     }
