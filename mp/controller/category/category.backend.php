@@ -5,7 +5,7 @@ class categoryBackend extends backend {
     public function __construct($model = 'category', $table = 'category', $alias = 'category', $template = '') {
         parent::__construct($model, $table, $alias, $template);
 
-        $this->entity = Helper::getApp()->load($model, 'entity', compact('model', 'table', 'alias'));
+        $this->entity = Helper::load($model, 'entity', compact('model', 'table', 'alias'));
     }
 
     public function navigator(){

@@ -43,7 +43,7 @@ class postBackend extends backend {
     public function main($category = '') {
         global $request;
 
-        $entity = Helper::getApp()->load('category', 'entity');
+        $entity = Helper::load('category', 'entity');
         $data = array();
 
         $query = explode('-', $category);

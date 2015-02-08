@@ -6,6 +6,7 @@ class model{
                         'select'=> empty($fields) ? "*" : $fields,
                         'where' => "{$this->alias}.id = {$id} AND {$this->alias}.deleted = 0",
                         'order' => "{$this->alias}.id desc",
+                        'limit'  => 1,
         );
 
         return $this->_findFirst($option);

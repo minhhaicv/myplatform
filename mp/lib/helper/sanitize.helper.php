@@ -69,7 +69,7 @@ class sanitizeHelper {
             return $string;
         }
 
-        return Helper::getDB()->value($string, 'string');
+        return Helper::db()->value($string, 'string');
     }
 
 /**

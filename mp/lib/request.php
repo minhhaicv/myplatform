@@ -199,7 +199,7 @@ class request {
             $output['data'] = $_POST;
         }
 
-        $output = Helper::forceGet('sanitize', 'helper')->clean($output);
+        $output = Helper::load('sanitize', 'helper')->clean($output);
 
         foreach ($output as $key => $info) {
             $request->$key = $info;

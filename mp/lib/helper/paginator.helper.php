@@ -1,6 +1,5 @@
 <?php
-
-class PaginatorHelper {
+class paginatorHelper {
 
     public function paginate($options = array(), $model = null, $pager = true) {
         $default = array(

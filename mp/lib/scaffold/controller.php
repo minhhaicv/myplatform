@@ -5,7 +5,7 @@ class controller{
         global $request;
 
         if($model){
-            $this->model = Helper::getApp()->load($model, 'model', compact('table', 'alias'));
+            $this->model = Helper::load($model, 'model', compact('table', 'alias'));
         }
 
         if(empty($template)) {

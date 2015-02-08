@@ -7,7 +7,6 @@ class urlHelper {
 
         $url = $request->getBaseUrl() . '/' . $request->prefix;
 
-
         foreach($request->query as $k => $v) {
             if($k === 'action' || $k === 'module') continue;
             if(empty($v) && !isset($params[$k])) continue;
@@ -78,5 +77,11 @@ class urlHelper {
         }
 
         return $url;
+    }
+
+    public function extend($url = '') {
+        global $request;
+
+        return $request->getBaseUrl() . '/' . $request->prefix . '/' . $url;
     }
 }

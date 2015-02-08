@@ -4,7 +4,7 @@
 //-----------------------------------------------
 // Root path
 
-define('DS', DIRECTORY_SEPARATOR);
+define( 'DS', DIRECTORY_SEPARATOR);
 
 define( 'ROOT'      , "." . DS );
 define( 'CONFIG'    , ROOT . "config" . DS );

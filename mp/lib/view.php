@@ -27,7 +27,7 @@ class view {
             echo $this->render($layout, compact('title', 'content', 'addon'));
         }
 
-        Helper::getApp()->finish();
-        return ob_get_clean();
+        Helper::app()->finish();
+       return ob_get_clean();
     }
 }

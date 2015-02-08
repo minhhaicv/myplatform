@@ -1,7 +1,7 @@
 <?php
 if (!function_exists('deconstructor')){
     function deconstructor() {
-        Helper::getDB()->disconnect();
+        Helper::db()->disconnect();
     }
 }
 

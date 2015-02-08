@@ -1,30 +1,29 @@
 <?php
 require_once "./config/constant.php";
-require_once MP."global.php";
-
-session_start();
+require_once MP . "global.php";
+require_once LIB . 'utility/path.php';
 
 $mem = memory_get_usage();
 $time = microtime(true);
 
 try {
-    require_once CONFIG."config.php";
-    $config = new config();
+    require_once MP . 'helper.php';
+    Helper::app();
 
-    require_once LIB.'helper.lib.php';
+    $config = Helper::config();
 
-    $db = Helper::getDB(true);
-    $db->connect();
+    Helper::db(true)->connect();
 
     register_shutdown_function('deconstructor');
 
-    Helper::getApp();
-    Helper::lib('request');
+    Helper::get('session', 'lib', true);
+
+    Helper::get('request', 'lib', true);
 
     Helper::scaffold(array("controller", "model", "entity"));
     $request->conduct();
 
-    Helper::lib('view');
+    Helper::get('view', 'lib', true);
     Helper::template();
 
     $app->execute();

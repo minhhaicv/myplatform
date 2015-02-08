@@ -1,10 +1,16 @@
 <?php
 class htmlHelper{
 
+    public function cdn(){
+        global $config, $request;
+
+        return sprintf('%s/%s', $config->vars['cdn'], $request->channel);
+    }
+
     public function js($list = array(), $path = '') {
         if(empty($path)) $path = 'js';
 
-        $path = helper::get('path', 'helper')->cdn() .'/' . $path .'/';
+        $path = self::cdn() .'/' . $path .'/';
 
         $result = '';
         foreach($list as $item) {
@@ -20,7 +26,7 @@ class htmlHelper{
     public function css($list = array(), $path = '') {
         if(empty($path)) $path = 'css';
 
-        $path = helper::get('path', 'helper')->cdn() .'/' . $path .'/';
+        $path = self::cdn() .'/' . $path .'/';
 
         $result = '';
         foreach($list as $item) {

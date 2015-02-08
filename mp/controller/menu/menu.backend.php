@@ -1,6 +1,5 @@
 <?php
-
-Helper::getApp()->uses('category', 'controller');
+Helper::uses('category', 'controller');
 
 class menuBackend extends categoryBackend {
 
@@ -9,7 +8,7 @@ class menuBackend extends categoryBackend {
     }
 
     public function add($branch = '') {
-        global $app, $request;
+        global $request;
 
         $option = array();
         $alias = $this->model->getAlias();
@@ -31,7 +30,7 @@ class menuBackend extends categoryBackend {
     }
 
     public function edit($branch = '', $id = 0) {
-        global $request, $app;
+        global $request;
 
         $id = intval($id);
         $option = array();
