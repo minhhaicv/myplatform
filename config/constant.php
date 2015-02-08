@@ -10,6 +10,8 @@ define( 'ROOT'      , "." . DS );
 define( 'CONFIG'    , ROOT . "config" . DS );
 define( 'MP'        , ROOT . "mp" . DS );
 define( 'LIB'       , MP . 'lib' . DS );
+define( 'TMP'       , ROOT . 'tmp' . DS );
 
-// error_reporting ( E_ERROR | E_WARNING | E_PARSE );
-// error_reporting(1);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(-1);

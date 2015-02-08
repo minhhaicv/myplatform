@@ -35,13 +35,13 @@ class Helper {
         if(is_null($template)) {
             $folder = $config->view[$request->channel];
 
-            self::attach(LIB."tpl-engine".DS."twig".DS."Autoloader.php", false);
+            self::attach(LIB."parse-engine".DS."Twig".DS."Autoloader.php", false);
             Twig_Autoloader::register();
 
             $loader = new Twig_Loader_Filesystem("./view/{$folder}".DS);
 
             $template = new Twig_Environment($loader, array(
-                                'cache' => "tmp/cache/view/{$folder}",
+                                'cache' => TMP . "cache/view/{$folder}",
                                 'debug' => true,
                                 'strict_variables' => true,
                                 'autoescape' => false,
