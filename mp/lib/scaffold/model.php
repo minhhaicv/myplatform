@@ -9,7 +9,7 @@ class model{
                         'limit'  => 1,
         );
 
-        return $this->_findFirst($option);
+        return $this->__findFirst($option);
     }
 
     public function find($option = array(), $type = 'all', $key = 'id') {

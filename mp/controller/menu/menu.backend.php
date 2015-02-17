@@ -3,8 +3,8 @@ Helper::uses('category', 'controller');
 
 class menuBackend extends categoryBackend {
 
-    public function __construct() {
-        parent::__construct('category', 'menu', 'menu', 'menu');
+    public function __construct($model = 'category', $table = 'menu', $alias = 'menu', $template = 'menu') {
+        parent::__construct($model, $table, $alias, $template);
     }
 
     public function add($branch = '') {

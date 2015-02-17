@@ -55,7 +55,7 @@ class postBackend extends backend {
 
         $lists = $entity->extract($catId);
 
-        $page = empty($request->query['page']) ? 1 : $request->query['page'];
+        $page = empty($request->name['page']) ? 1 : $request->name['page'];
 
         $alias = $this->model->getAlias();
 

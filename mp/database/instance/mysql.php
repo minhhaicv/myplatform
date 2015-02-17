@@ -273,12 +273,12 @@ class Mysql extends Sql{
     private function __buildFind($query) {
         $prefix = $this->config['prefix'];
 
-         if (empty($query['select'])) {
+        if (empty($query['select'])) {
             $query['select'] = "*";
         }
 
         foreach ($query['from'] as $table => $alias) {
-            $query['from'] = $prefix . $table . ' AS ' . $alias;
+            $query['from'] = $prefix . $table . ' AS `' . $alias . '`';
             break;
         }
 
@@ -294,7 +294,7 @@ class Mysql extends Sql{
 
                     $condition = trim($condition) . ')';
 
-                    $extend = ' ' . $join['type'] . ' JOIN ' . $table . ' AS ' . $join['alias'] . ' ' . $condition;
+                    $extend = ' ' . $join['type'] . ' JOIN ' . $table . ' AS `' . $join['alias'] . '` ' . $condition;
 
                     $query['from'] .= $extend;
                 }
@@ -408,13 +408,13 @@ class Mysql extends Sql{
 
     public function select($query = array()) {
         $key = array(
-                        'select' => "SELECT",
-                        'from'   => "FROM",
-                        'where'  => "WHERE",
-                        'group'  => "GROUP BY",
-                        'having' => "HAVING",
-                        'order'  => "ORDER BY",
-                        'limit' => "LIMIT",
+                    'select' => "SELECT",
+                    'from'   => "FROM",
+                    'where'  => "WHERE",
+                    'group'  => "GROUP BY",
+                    'having' => "HAVING",
+                    'order'  => "ORDER BY",
+                    'limit'  => "LIMIT",
         );
 
         $q = '';

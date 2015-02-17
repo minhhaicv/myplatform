@@ -216,6 +216,7 @@ class Request {
         $request = $input['request'];
 
         $prefixList = Helper::config()->prefix;
+
         foreach ($input as $key => $value) {
             if ($key == 'request') {
                 $value = trim($value, '/');
@@ -260,7 +261,11 @@ class Request {
         $query = array_values($query);
 
         $query['module'] = $query[0];
-        $query['action'] = empty($query[1]) ? '' : $query[1];
+        $query['action'] = '';
+
+        if (empty($query[1]) === false && strpos($query[1], ':') === false) {
+            $query['action'] = $query[1];
+        }
 
         $channel = empty($prefix) ? 'blank' : $prefix;
 
