@@ -1,11 +1,11 @@
 <?php
 class securityAuth{
 
-    protected function salt() {
+    protected function _salt() {
         return 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi';
     }
 
     public function hash($string = '', $type = 'sha1') {
-        return Helper::get('security')->hash($string, $type, $this->salt());
+        return Security::hash($string, $type, $this->_salt());
     }
 }

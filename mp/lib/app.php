@@ -1,7 +1,6 @@
 <?php
-class app {
+class App {
 
-    public $base = '';
     public function __construct() {
         $this->basic();
     }
@@ -24,10 +23,11 @@ class app {
 
         $class = $module.ucfirst($channel);
 
-        if(!class_exists($class))
-            throw new Exception(sprintf('The class <b>%s</b> does not exist in the file [%s]!', $class, $path));
+        if (class_exists($class)) {
+            $view->finalize(new $class());
+        }
 
-        $view->finalize(new $class());
+        throw new Exception(sprintf('The class <b>%s</b> does not exist in the file [%s]!', $class, $path));
     }
 
     public function finish() {

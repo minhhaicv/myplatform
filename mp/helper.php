@@ -14,7 +14,7 @@ class Helper {
     static function db() {
         global $db;
 
-        if(is_null($db)){
+        if (is_null($db)) {
             self::attach(CONFIG."database.php", false);
             $dbconfig = new DATABASE_CONFIG();
 
@@ -32,7 +32,7 @@ class Helper {
     static function template() {
         global $template, $request, $config;
 
-        if(is_null($template)) {
+        if (is_null($template)) {
             $folder = $config->view[$request->channel];
 
             self::attach(LIB."parse-engine".DS."Twig".DS."Autoloader.php", false);
@@ -63,17 +63,19 @@ class Helper {
     static function scaffold($name = array()) {
         $path = LIB . 'scaffold' . DS;
 
-        foreach($name as $value) {
+        foreach ($name as $value) {
             self::attach($path . $value . '.php', false);
         }
     }
 
     static function get($name, $type = 'helper', $global = false) {
-        if(empty($global)) return self::load($name, $type);
+        if (empty($global)) {
+            return self::load($name, $type);
+        }
 
         global $$name;
 
-        if(is_null($$name)) {
+        if (is_null($$name)) {
             $$name = self::load($name, 'lib');
         }
 
@@ -84,7 +86,7 @@ class Helper {
     static function config() {
         global $config;
 
-        if(is_null($config)) {
+        if (is_null($config)) {
             self::attach(CONFIG."config.php", false);
             $config = new config();
         }
@@ -94,10 +96,10 @@ class Helper {
 
 ///fixed
 
-    static function uses(&$instance = '', $type = '') {
+    static function uses($instance = '', $type = '', $filename = '') {
         switch ($type) {
             case 'package':
-                self::package($instance);
+                self::package($instance, $filename);
                 break;
             case 'utility':
                 self::utility($instance);
@@ -113,10 +115,12 @@ class Helper {
             default:
                 self::def($instance, $type);
         }
+
+        return $instance;
     }
 
     static function load($instance = '', $type = '', $arguments = array()) {
-        self::uses($instance, $type);
+        $instance = self::uses($instance, $type);
 
         $reflection = new ReflectionClass($instance);
         return $reflection->newInstanceArgs($arguments);
@@ -176,7 +180,10 @@ class Helper {
     static function package($package = '', $filename = '') {
         $path = path::load('package', $package);
 
-        if(empty($filename)) $filename = $package;
+        if (empty($filename)) {
+            $filename = $package;
+        }
+
         $filename = $path . $filename . '.php';
 
         self::attach($filename);
@@ -184,14 +191,18 @@ class Helper {
 
     static function attach($filename = "", $relative = true) {
         try {
-            if(empty($relative)) return require_once($filename);
+            if (empty($relative)) {
+                return require_once($filename);
+            }
 
-            if (file_exists(ROOT . $filename))
+            if (file_exists(ROOT . $filename)) {
                 $filename = ROOT . $filename;
-            else $filename = MP . $filename;
+            } else {
+                $filename = MP . $filename;
+            }
 
             return require_once($filename);
-        } catch(Exception $e){
+        } catch (Exception $e) {
             throw new Exception(sprintf('Cannot import [%s] by require_once!', $path));
         }
     }

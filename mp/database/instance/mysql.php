@@ -261,16 +261,16 @@ class Mysql extends Sql{
 
     public function buildQuery($query = array(), $type = "select") {
         if($type == 'select')
-            return $this->_buildFind($query);
+            return $this->__buildFind($query);
 
         if($type == 'create')
-            return $this->_buildCreate($query);
+            return $this->__buildCreate($query);
 
         if($type == 'update')
-            return $this->_buildUpdate($query);
+            return $this->__buildUpdate($query);
     }
 
-    private function _buildFind($query) {
+    private function __buildFind($query) {
         $prefix = $this->config['prefix'];
 
          if (empty($query['select'])) {
@@ -320,7 +320,7 @@ class Mysql extends Sql{
         return $query;
     }
 
-    private function _buildCreate($query) {
+    private function __buildCreate($query) {
         $data = $query['fields'];
 
         $from = $this->config['prefix'].$query['from'];
@@ -380,7 +380,7 @@ class Mysql extends Sql{
         return $query;
     }
 
-    private function _buildUpdate($query, $option = array()) {
+    private function __buildUpdate($query, $option = array()) {
         $prefix = $this->config['prefix'];
 
         $query['from'] = $this->config['prefix'].$query['from'];

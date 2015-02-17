@@ -2,15 +2,18 @@
 require_once "./config/constant.php";
 require_once MP . "global.php";
 require_once LIB . 'utility/path.php';
+require_once MP . 'helper.php';
 
 $mem = memory_get_usage();
 $time = microtime(true);
 
 try {
-    require_once MP . 'helper.php';
     Helper::app();
 
-    $config = Helper::config();
+    Helper::uses('security', 'utility');
+    Helper::uses('sanitize', 'utility');
+
+    Helper::config();
 
     Helper::db(true)->connect();
 

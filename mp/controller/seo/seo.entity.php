@@ -1,16 +1,18 @@
 <?php
 
-class seoEntity extends entity{
-    function __construct() {
-        parent::__construct('seo');
+class seoEntity extends entity {
+
+    function __construct($model = 'seo', $table = 'seo', $alias = 'seo') {
+        parent::__construct($model, $table, $alias);
     }
+
 
     function __destruct(){
         unset($this);
     }
 
     public function instance($id = 0) {
-        if($id) {
+        if ($id) {
             $alias = $this->model->getAlias();
             $fields =  "{$alias}.id, {$alias}.alias, {$alias}.canonical, {$alias}.title, {$alias}.keyword, {$alias}.desc";
 

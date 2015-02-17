@@ -33,13 +33,13 @@ class paginatorHelper {
 
         $return['pager'] = array();
         if($pager && $pageCount > 1) {
-            $return['pager'] = $this->_pager(array('current' => $page, 'count' => $pageCount));
+            $return['pager'] = $this->__pager(array('current' => $page, 'count' => $pageCount));
         }
 
         return $return;
     }
 
-    private function _pager($params) {
+    private function __pager($params) {
         $result = array();
 
         $modulus = 4;
@@ -47,13 +47,14 @@ class paginatorHelper {
         $start = 1;
         $end = $params['count'];
 
-        if($params['count'] > $modulus) {
+        if ($params['count'] > $modulus) {
             $half = (int)($modulus / 2);
             $end = $params['current'] + $half;
 
             if ($end > $params['count']) {
                 $end = $params['count'];
             }
+
             $start = $params['current'] - ($modulus - ($end - $params['current']));
             if ($start <= 1) {
                 $start = 1;
@@ -61,17 +62,17 @@ class paginatorHelper {
             }
         }
 
-        if($params['current'] >= $modulus) {
+        if ($params['current'] >= $modulus) {
             $result[] = array('display' => '&laquo;', 'page' => 1, 'target' => false);
         }
 
-        while($start <= $end) {
+        while ($start <= $end) {
             $result[] = array('display' => $start, 'page' => $start, 'target' => ($start == $params['current']));
 
             $start++;
         }
 
-        if($params['current'] < ($params['count'] - $half)) {
+        if ($params['current'] < ($params['count'] - $half)) {
             $result[] = array('display' => '&raquo;', 'page' => $params['count'], 'target' => false);
         }
 

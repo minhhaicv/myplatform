@@ -1,60 +1,82 @@
 <?php
-class session {
+Helper::attach(LIB . 'utility/hash.php');
 
-    public function test() {
-        print "<pre>";
-        print_r('session lib');
-        print "</pre>";
-    }
+class Session {
 
     public function __construct() {
         session_start();
     }
 
-    static function check($key=''){
-        if($key) return false;
-
-        $eval ="\$return = \$_SESSION";
-        foreach($temp as $field) {
-            $eval = $eval."['".$field."']";
+    static function check($name = ''){
+        if (empty($name)) {
+            return false;
         }
-        eval($eval.';');
-        return isset($return);
+
+        return Hash::get($_SESSION, $name) !== null;
     }
 
-    static function write($key='', $val=''){
-        if(!$key) return false;
-        $temp = explode('.', $key);
-
-        $eval ="\$_SESSION";
-        foreach($temp as $field) {
-            $eval = $eval."['".$field."']";
+    static function write($name, $value = null) {
+        if (empty($name)) {
+            return false;
         }
 
-        $eval .= "=\$val;";
-        eval($eval);
+        $write = $name;
+        if (!is_array($name)) {
+            $write = array($name => $value);
+        }
+
+        foreach ($write as $key => $val) {
+            self::_overwrite($_SESSION, Hash::insert($_SESSION, $key, $val));
+            if (Hash::get($_SESSION, $key) !== $val) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    static function read($key='') {
-        if(!$key) return false;
-        $temp = explode('.', $key);
-
-        $eval ="\$return = \$_SESSION";
-        foreach($temp as $field) {
-            $eval = $eval."['".$field."']";
+    static function read($name='') {
+        if (empty($name) && $name !== null) {
+            return null;
         }
-        eval($eval.';');
 
-        return $return;
+        if ($name === null) {
+            return $_SESSION;
+        }
+
+        $result = Hash::get($_SESSION, $name);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        return null;
     }
 
     static function delete($key=''){
-        if(!$key) return false;
-
-        $eval ="unset(\$_SESSION";
-        foreach(explode(".", trim($key, '.')) as $field) {
-            $eval = $eval."['".$field."']";
+        if (self::check($name)) {
+            self::_overwrite($_SESSION, Hash::remove($_SESSION, $name));
+            return !self::check($name);
         }
-        eval($eval.');');
+        return false;
+    }
+
+    protected static function _overwrite(&$old, $new) {
+        if (!empty($old)) {
+            foreach ($old as $key => $var) {
+                if (!isset($new[$key])) {
+                    unset($old[$key]);
+                }
+            }
+        }
+        foreach ($new as $key => $var) {
+            $old[$key] = $var;
+        }
+    }
+
+    public static function destroy() {
+        session_destroy();
+
+        $_SESSION = null;
     }
 }

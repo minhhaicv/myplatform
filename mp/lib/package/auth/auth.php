@@ -1,21 +1,17 @@
 <?php
-Helper::attach(LIB . 'package' . DS . 'auth' . DS . 'security.auth.php');
 
 class auth{
 
-    public function test(){
-        echo 54321;
-    }
-
     public function login($account = '', $password = '') {
-        return $this->authenticate($account, $password);
+        return $this->_authenticate($account, $password);
     }
 
-    protected function authenticate($account = '', $password = '') {
-        return $this->internalAuthenticate($account, $password);
+    protected function _authenticate($account = '', $password = '') {
+        return $this->_internalAuthenticate($account, $password);
     }
 
-    protected function internalAuthenticate($account = '', $password = '') {
+    protected function _internalAuthenticate($account = '', $password = '') {
+        Helper::package('auth', 'security.auth');
         $model = Helper::get('user', 'model');
 
         $security = new securityAuth();
@@ -30,9 +26,11 @@ class auth{
 
         $tmp = $model->find($option, 'first');
 
-        if(empty($tmp)) return false;
+        if (empty($tmp)) {
+            return false;
+        }
 
-        session::write('auth', $tmp);
+        Session::write('auth', $tmp);
 
         return true;
     }

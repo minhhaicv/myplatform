@@ -2,11 +2,11 @@
 
 class seo extends Model {
 
-    function __construct(){
-        parent::__construct('seo', 'seo');
+    public function __construct($table = 'seo', $alias = 'seo'){
+        parent::__construct($table, $alias);
     }
 
-    function __destruct(){
+    public function __destruct(){
         unset($this);
     }
 }

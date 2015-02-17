@@ -4,11 +4,11 @@ class controller{
     function __construct($model = '', $table = '', $alias = '', $template = '') {
         global $request;
 
-        if($model){
+        if ($model) {
             $this->model = Helper::load($model, 'model', compact('table', 'alias'));
         }
 
-        if(empty($template)) {
+        if (empty($template)) {
             $template = $request->query['module'];
         }
 
@@ -17,11 +17,7 @@ class controller{
 
 
     public function getCategory($alias, $spacer = '&nbsp;&nbsp;&nbsp;&nbsp;', $level = 2, &$entity = null) {
-        global $app;
-
-        $entity = $app->load('category', 'entity');
-
-        return $entity->branch($alias, $spacer, 'title', $level);
+        return Helper::load('category', 'entity')->branch($alias, $spacer, 'title', $level);
     }
 
     public function paginate($options = array(), $pager = true) {
@@ -41,7 +37,7 @@ class controller{
                         404 => 'Not Found',
         );
 
-        if($refresh) {
+        if ($refresh) {
             header ( "Refresh: " . $refresh . ";url=" . $url);
             $this->render('redirect', array(), 'scaffold/');
         } else {
@@ -54,7 +50,7 @@ class controller{
     public function render ($template = '', $option = array(), $prefix = '') {
         global $view, $request;
 
-        if(empty($prefix)) {
+        if (empty($prefix)) {
             $prefix = $this->templateFolder . DS;
         }
 

@@ -1,5 +1,5 @@
 <?php
-class request {
+class Request {
 
 // 	protected $_detectors = array(
 // 		'get' => array('env' => 'REQUEST_METHOD', 'value' => 'GET'),
@@ -178,9 +178,7 @@ class request {
     }
 
     public function getBaseUrl() {
-        global $config;
-
-        return $config->vars['board_url'];
+        return Helper::config()->vars['board_url'];
     }
 
     public function conduct() {
@@ -190,16 +188,16 @@ class request {
 
         $output = $_GET;
 
-        if(empty($output)) {
-           $this->alternate($output);
+        if (empty($output)) {
+           $this->__alternate($output);
         }
 
-        $output = $this->_get($output);
-        if(!empty($_POST)) {
+        $output = $this->__formatGet($output);
+        if (!empty($_POST)) {
             $output['data'] = $_POST;
         }
 
-        $output = Helper::load('sanitize', 'helper')->clean($output);
+        $output = Sanitize::clean($output);
 
         foreach ($output as $key => $info) {
             $request->$key = $info;
@@ -211,21 +209,22 @@ class request {
     }
 
 
-    private function _get($input) {
-        global $config;
-
+    private function __formatGet($input) {
         $prefix = $channel = '';
         $query  = $name = $param = array();
 
         $request = $input['request'];
+
+        $prefixList = Helper::config()->prefix;
         foreach ($input as $key => $value) {
-            if($key == 'request') {
+            if ($key == 'request') {
                 $value = trim($value, '/');
-                if(strpos(trim($value, '/'), '/') !== false) {
+
+                if (strpos(trim($value, '/'), '/') !== false) {
                     $query = array_merge($query, explode('/', $value));
 
                     foreach ($query as $k => $v) {
-                        if (in_array($v, $config->prefix)) {
+                        if (in_array($v, $prefixList)) {
                             $prefix = $v;
                             unset($query[$k]);
 
@@ -268,7 +267,7 @@ class request {
         return compact('request', 'query', 'name', 'param', 'prefix', 'channel');
     }
 
-    private function alternate(&$input = array()) {
+    private function __alternate(&$input = array()) {
         if(empty($url['request'])){
             $input['request'] = "home";
         }

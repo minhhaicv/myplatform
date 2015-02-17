@@ -16,7 +16,10 @@ class categoryEntity extends entity{
     public function root($branch = '') {
         $tmp = $this->model->getBySlug($branch, 'list');
 
-        if (empty($tmp)) return 0;
+        if (empty($tmp)) {
+            return 0;
+        }
+
         return current($tmp);
     }
 

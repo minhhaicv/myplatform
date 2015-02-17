@@ -7,24 +7,28 @@ class urlHelper {
 
         $url = $request->getBaseUrl() . '/' . $request->prefix;
 
-        foreach($request->query as $k => $v) {
-            if($k === 'action' || $k === 'module') continue;
-            if(empty($v) && !isset($params[$k])) continue;
+        foreach ($request->query as $k => $v) {
+            if ($k === 'action' || $k === 'module') {
+                continue;
+            }
 
-            if(strpos($v, ':') !== false) {
+            if (empty($v) && !isset($params[$k])) {
+                continue;
+            }
+
+            if (strpos($v, ':') !== false) {
                 list($k, $v) = explode(':', $v);
             }
 
-            if(isset($params[$k])) {
+            if (isset($params[$k])) {
                 $url .= '/' . $k . ':' . $params[$k];
                 unset($params[$k]);
-            }
-             else {
+            } else {
                 $url .= '/' . $v;
             }
         }
 
-        foreach($params as $k => $v) {
+        foreach ($params as $k => $v) {
             $url .= '/' . $k . ':' . $params[$k];
         }
 
@@ -42,7 +46,9 @@ class urlHelper {
 
         $url = $request->getBaseUrl() . '/' . $request->prefix . '/' . $request->query['module'] . '/' . $type;
 
-        if($type == 'edit')  $url .= '/' . $id;
+        if ($type == 'edit') {
+            $url .= '/' . $id;
+        }
 
         return $url;
     }
@@ -60,7 +66,7 @@ class urlHelper {
 
         $url = $request->getBaseUrl() . '/' . $request->prefix . '/' . $request->query['module'] . '/' . $type;
 
-        if(empty($option['branch']) == false) {
+        if (empty($option['branch']) == false) {
             $url .= '/' . $option['branch'];
         }
 

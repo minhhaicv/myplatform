@@ -16,7 +16,7 @@ class view {
         $content = $runme->getOutput();
         $layout  = $runme->getLayout();
 
-        if(empty($layout)) {
+        if (empty($layout)) {
             echo $content;
         } else {
             $title = 'twig test';
@@ -28,6 +28,6 @@ class view {
         }
 
         Helper::app()->finish();
-       return ob_get_clean();
+        return ob_get_clean();
     }
 }

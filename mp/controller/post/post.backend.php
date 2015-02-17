@@ -9,7 +9,7 @@ class postBackend extends backend {
     public function navigator(){
         global $request;
 
-        switch($request->query['action']){
+        switch ($request->query['action']) {
             case 'add':
                     $this->add();
                 break;
@@ -28,7 +28,7 @@ class postBackend extends backend {
     public function delete() {
         global $request;
 
-        if(!empty($request->data[$this->model->getAlias()])) {
+        if (!empty($request->data[$this->model->getAlias()])) {
             $target = implode(',', $request->data[$this->model->getAlias()]);
 
             $condition = 'id IN (' . $target . ')';
@@ -49,7 +49,9 @@ class postBackend extends backend {
         $query = explode('-', $category);
         $catId = abs(intval($query[count($query)-1]));
 
-        if(empty($catId)) $catId = $entity->root($this->model->getAlias());
+        if (empty($catId)) {
+            $catId = $entity->root($this->model->getAlias());
+        }
 
         $lists = $entity->extract($catId);
 
@@ -76,7 +78,7 @@ class postBackend extends backend {
         $id = intval($id);
         $option = array();
 
-        if(!empty($request->data[$this->model->getAlias()])) {
+        if (!empty($request->data[$this->model->getAlias()])) {
             $this->_save($request->data);
         }
 
@@ -84,7 +86,7 @@ class postBackend extends backend {
         $fields =  "{$alias}.id, {$alias}.title, {$alias}.category_id, {$alias}.index, {$alias}.intro, {$alias}.content, {$alias}.status, {$alias}.seo_id";
 
         $target = $this->model->findById($id, $fields);
-        if(empty($target)) {
+        if (empty($target)) {
             return $this->redirect(Helper::get('url')->notfound());
         }
 
@@ -102,10 +104,12 @@ class postBackend extends backend {
         $alias = $this->model->getAlias();
 
         $target = $this->model->init();
-        if(!empty($request->data[$alias])) {
+        if (!empty($request->data[$alias])) {
             $flag = $this->_save($request->data);
 
-            if($flag) return $this->redirect(Helper::get('url')->generate());
+            if ($flag) {
+                return $this->redirect(Helper::get('url')->generate());
+            }
 
             $target = $request->data;
         }
@@ -121,14 +125,19 @@ class postBackend extends backend {
         $lastInsertId = 0;
 
         $flag = $this->model->save($data[$this->model->getAlias()]);
-        if($flag == false) return false;
+        if ($flag == false) {
+            return false;
+        }
 
-        $lastInsertId = empty($data[$this->model->getAlias()]['id']) ? $this->model->lastInsertId() : $data[$this->model->getAlias()]['id'];
+        $lastInsertId = empty($data[$this->model->getAlias()]['id']) ?
+                            $this->model->lastInsertId() :
+                            $data[$this->model->getAlias()]['id'];
 
         $affact[$this->model->getAlias()] = $lastInsertId;
 
-        if(empty($data['seo']) == false)
+        if (empty($data['seo']) == false) {
             return $this->_saveSEO($data, $affact);
+        }
 
         return $flag;
     }
@@ -139,7 +148,9 @@ class postBackend extends backend {
 
         $lastInsertId = 0;
         $flag = $this->saveSEOInstance($data['seo'], $data[$this->model->getAlias()], 'detail', $lastInsertId);
-        if($flag == false) return false;
+        if ($flag == false) {
+            return false;
+        }
 
         $affact['seo'] = $lastInsertId;
 
@@ -150,5 +161,4 @@ class postBackend extends backend {
 
         return $this->model->update($option);
     }
-
 }

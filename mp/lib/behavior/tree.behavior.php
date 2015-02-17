@@ -1,6 +1,6 @@
 <?php
 //http://www.sitepoint.com/hierarchical-data-database-3/
-class treeBehavior extends Model{
+class treeBehavior extends Model {
     private $left    = 'lft';
     private $right   = 'rght';
     private $parent  = 'parent_id';
@@ -16,10 +16,10 @@ class treeBehavior extends Model{
     }
 
     public function indent(&$data = array(), $spacer = '', $display = 'title') {
-        $right = array();
-
+        $right  = array();
         $result = array();
-        foreach($data as $key => $row) {
+
+        foreach ($data as $key => $row) {
             if (count($right) > 0) {
                 // check if we should remove a node from the stack
 
@@ -41,10 +41,12 @@ class treeBehavior extends Model{
         $option = array (
                         'select' => "{$this->alias}.{$this->left}, {$this->alias}.{$this->right}",
                         'where' => "{$this->alias}.id = '{$root}' AND {$this->alias}.deleted = 0",
-        );
+                    );
 
         $root = $this->find($option, "first");
-        if(empty($root)) return array();
+        if (empty($root)) {
+            return array();
+        }
 
         $option = array (
                     'select' => "{$this->alias}.id, {$this->alias}.{$display}, {$this->alias}.{$this->left}, {$this->alias}.{$this->right}",
@@ -69,15 +71,17 @@ class treeBehavior extends Model{
         );
 
         $root = $this->find($options, 'first');
-        if(empty($root)) return false;
+        if(empty($root)) {
+            return false;
+        }
 
-        $lft = empty($root[$this->alias]['lft']) ? 1 : $root[$this->alias]['lft'];
-        $this->_rebuild($root[$this->alias]['id'], $lft);
+        $lft = empty ($root[$this->alias]['lft']) ? 1 : $root[$this->alias]['lft'];
+        $this->__rebuild($root[$this->alias]['id'], $lft);
 
         return true;
     }
 
-    public function _rebuild($parent, $left) {
+    private function __rebuild($parent, $left) {
         // the right value of this node is the left value + 1
         $right = $left+1;
 
@@ -95,9 +99,9 @@ class treeBehavior extends Model{
         }
 
         $option = array(
-                       'fields' => array($this->left => $left, $this->right => $right),
+                        'fields' => array($this->left => $left, $this->right => $right),
                         'where' => "id = ".$parent
-        );
+                    );
 
         $this->update($option);
 
@@ -117,28 +121,28 @@ class treeBehavior extends Model{
         $option = array(
                         'fields' => array($this->right => "`".$this->right . "`+ 2"),
                         'where' => $this->right." >= ".$flag
-        );
+                    );
 
         $this->update($option);
 
         $option = array(
                         'fields' => array($this->left => "`".$this->left . "` + 2"),
                         'where' => $this->left." >= ".$flag
-        );
+                    );
 
         $this->update($option);
 
-        $info[$this->left] = $flag;
+        $info[$this->left]  = $flag;
         $info[$this->right] = $flag + 1;
-        $info['parent_id'] = $target;
+        $info['parent_id']  = $target;
 
         $this->create($info);
     }
 
     public function delete($target = '') {
         $option = array(
-                  'select' => "{$this->alias}.{$this->left}, {$this->alias}.{$this->right}"
-               );
+                        'select' => "{$this->alias}.{$this->left}, {$this->alias}.{$this->right}"
+                    );
 
         $tmp = $result = $this->extract($target, false, $option);
         $result = Helper::getHelper('hash')->extract($result, $this->alias);
@@ -147,15 +151,15 @@ class treeBehavior extends Model{
         $flag = $tmp[$target][$this->alias][$this->right];
 
         $option = array(
-                        'fields' => array($this->right => "`".$this->right . "`- ".$delta),
-                        'where' => $this->right." >= ".$flag
+                    'fields' => array($this->right => "`".$this->right . "`- ".$delta),
+                    'where' => $this->right." >= ".$flag
         );
         $this->update($option);
 
         $option = array(
                         'fields' => array($this->left => "`".$this->left . "` - ".$delta),
                         'where' => $this->left." >= ".$flag
-        );
+                    );
         $this->update($option);
 
         $update[$this->left] = 0;
@@ -165,24 +169,26 @@ class treeBehavior extends Model{
         $option = array(
                         'fields' => $update,
                         'where'  => 'id IN ('.implode($result, ',').')'
-        );
+                    );
 
         $this->update($option);
     }
 
     public function extract($id = '', $childOnly = false, $custom = array()) {
-        $option = array (
+        $option = array(
                         'select' => "{$this->alias}.lft, {$this->alias}.rght",
                         'where' => "{$this->alias}.id = {$id} AND {$this->alias}.status > 0 AND {$this->alias}.deleted = 0",
-        );
+                    );
 
         $parent = $this->find($option, 'first');
-        if(empty($parent)) return array();
+        if (empty($parent)) {
+            return array();
+        }
 
         extract($parent[$this->alias]);
 
         $where = "{$this->alias}.{$this->left} BETWEEN {$lft} AND {$rght} AND {$this->alias}.status > 0 AND {$this->alias}.deleted = 0";
-        if($childOnly) {
+        if ($childOnly) {
             $where = "{$lft} < {$this->alias}.{$this->left} AND {$this->left} < {$rght}  AND {$this->alias}.status > 0 AND {$this->alias}.deleted = 0";
         }
 
@@ -202,21 +208,24 @@ class treeBehavior extends Model{
     //build tree from parent id
     public function build($data = array(), $root = 0) {
         $new = array();
-        foreach ($data as $item){
+        foreach ($data as $item) {
             $new[$item[$this->alias]['parent_id']][] = $item;
         }
 
-        return $this->_build($new, array($data[$root]));
+        return $this->__build($new, array($data[$root]));
     }
 
-    private function _build(&$list, $parent){
+    private function __build(&$list, $parent){
         $tree = array();
-        foreach ($parent as $k => $l){
-            if(isset($list[$l[$this->alias]['id']])){
+
+        foreach ($parent as $k => $l) {
+            if (isset($list[$l[$this->alias]['id']])) {
                 $l['children'] = $this->_build($list, $list[$l[$this->alias]['id']]);
             }
+
             $tree[] = $l;
         }
+
         return $tree;
     }
 }

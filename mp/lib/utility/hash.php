@@ -28,12 +28,6 @@ Helper::attach(LIB . 'utility/string.php');
  * @package       Cake.Utility
  */
 class Hash {
-    static public function test(){
-        print "<pre>";
-        print_r('hash');
-        print "</pre>";
-    }
-
 /**
  * Get a single value specified by $path out of $data.
  * Does not support the full dot notation feature set,

@@ -13,25 +13,27 @@ class model{
     }
 
     public function find($option = array(), $type = 'all', $key = 'id') {
-        $func = '_find'.ucfirst($type);
+        $func = '__find'.ucfirst($type);
 
         return $this->$func($option, $key);
     }
 
-    private function _findAll($option, $key= 'id') {
-        $tmp = $this->retrieve($option);
+    private function __findAll($option, $key= 'id') {
+        $tmp = $this->__retrieve($option);
 
-        if(empty($tmp)) return array();
+        if (empty($tmp)) {
+            return array();
+        }
 
         $result = array();
 
         $checker = current($tmp);
-        if(empty($checker[$this->alias][$key])) {
-            foreach( $tmp as $item ) {
+        if (empty($checker[$this->alias][$key])) {
+            foreach ($tmp as $item) {
                 $result[] = $item;
             }
         } else {
-            foreach( $tmp as $item ) {
+            foreach ($tmp as $item) {
                 $result[$item[$this->alias][$key]] = $item;
             }
         }
@@ -39,46 +41,45 @@ class model{
         return $result;
     }
 
-    private function _findFirst($option) {
-        $tmp = $this->retrieve($option);
-
+    private function __findFirst($option) {
         $result = array();
 
-        foreach( $tmp as $item ) {
+        $tmp = $this->__retrieve($option);
+        foreach ($tmp as $item) {
             $result = $item;
         }
 
         return $result;
     }
 
-    private function _findCount($option) {
+    private function __findCount($option) {
         extract($option);
 
         $select = 'count(' . $this->alias .'.id) as count';
 
-        $tmp = $this->retrieve(compact('select', 'where'));
+        $tmp = $this->__retrieve(compact('select', 'where'));
 
         return empty($tmp) ? 0 : $tmp[0][0]['count'];
     }
 
-    private function _findList($option) {
-        $tmp = $this->retrieve($option);
+    private function __findList($option) {
+        $tmp = $this->__retrieve($option);
 
         $exp = explode(',', $option['select']);
 
         $result = array();
 
-        if(count($exp) == 1) {
+        if (count($exp) == 1) {
             $value = strtr($exp[0], array($this->alias.'.' => ''));
 
-            foreach( $tmp as $item ) {
+            foreach ($tmp as $item) {
                 $result[] = $item[$this->alias][$value];
             }
         } else {
             $key   = strtr($exp[0], array($this->alias.'.' => ''));
             $value = strtr($exp[1], array($this->alias.'.' => ''));
 
-            foreach( $tmp as $item ) {
+            foreach ($tmp as $item) {
                 $result[$key] = $item[$this->alias][$value];
             }
         }
@@ -96,8 +97,9 @@ class model{
     }
 
     public function save($data) {
-        if(empty($data[$this->primaryKey]))
+        if (empty($data[$this->primaryKey])) {
             return $this->create($data);
+        }
 
         $option = array(
                         'fields' => $data,
@@ -111,10 +113,11 @@ class model{
         $value = array('status' => 1);
         $default = array();
 
-        if(empty($fields))
+        if (empty($fields)) {
             $fields = $this->getColumn();
+        }
 
-        foreach($fields as $f) {
+        foreach ($fields as $f) {
             $default[$f] = empty($value[$f]) ? '' : $value[$f];
         }
 
@@ -122,25 +125,23 @@ class model{
     }
 
 ///////////////////////////////////////////////////////////////
-    private function retrieve($option = array()){
-        global $db;
-
+    private function __retrieve($option = array()){
         $option['from'] = array($this->table => $this->alias);
-        $query = $db->buildQuery($option);
+        $query = Helper::db()->buildQuery($option);
 
-        $q = $db->renderStatement('select', $query);
+        $q = Helper::db()->renderStatement('select', $query);
 
-        return $db->query($q);
+        return Helper::db()->query($q);
     }
 
     public function getQueries($full = false) {
-        global $db;
-
-        $log = $db->getLog();
-        if($full) return $log;
+        $log = Helper::db()->getLog();
+        if ($full) {
+            return $log;
+        }
 
         $tmp = array();
-        foreach( $log['log'] as $item) {
+        foreach ($log['log'] as $item) {
             $tmp[] = $item['query'];
         }
 
@@ -148,51 +149,42 @@ class model{
     }
 
     public function query($query = '') {
-        global $db;
-
-        return $db->query($query);
+        return Helper::db()->query($query);
     }
 
     public function create($data = array()) {
-        global $db;
-
         $option = array(
-                  'from' => $this->table,
-                  'fields' => $data
+                      'from' => $this->table,
+                      'fields' => $data
         );
-        $query = $db->buildQuery($option, 'create');
 
-        $q = $db->renderStatement('create', $query);
+        $query = Helper::db()->buildQuery($option, 'create');
 
-        return $db->query($q, true);
+        $q = Helper::db()->renderStatement('create', $query);
+
+        return Helper::db()->query($q, true);
     }
 
     public function update($data) {
-        global $db;
-
         $data['from'] = $this->table;
-        $query = $db->buildQuery($data, 'update');
+        $query = Helper::db()->buildQuery($data, 'update');
 
-        $q = $db->renderStatement('update', $query);
+        $q = Helper::db()->renderStatement('update', $query);
 
-        return $db->query($q, true);
+        return Helper::db()->query($q, true);
     }
 
     public function lastInsertId() {
-        global $db;
-
-        return $db->lastInsertId();
+        return Helper::db()->lastInsertId();
     }
 
     public function getColumn() {
-        global $db;
-
-        return $db->getColumn($this->table);
+        return Helper::db()->getColumn($this->table);
     }
 
-    protected $table 			= "";
-    protected $alias 			= "";
-    protected $primaryKey		= "";
+    protected $table             = "";
+    protected $alias             = "";
+    protected $primaryKey        = "";
 
 
     function __construct($table='', $alias = '', $primaryKey='id'){

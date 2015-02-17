@@ -1,5 +1,4 @@
 <?php
-
 class categoryBackend extends backend {
 
     public function __construct($model = 'category', $table = 'category', $alias = 'category', $template = '') {
@@ -40,23 +39,25 @@ class categoryBackend extends backend {
 
         $target = $this->model->init();
 
-        if(!empty($request->data[$alias])) {
+        if (!empty($request->data[$alias])) {
             $flag = $this->saveBranchRoot($super);
 
-            if($flag) return $this->redirect(Helper::get('url')->category('main'));
-        } elseif(!empty($request->name['edit'])) {
+            if ($flag) {
+                return $this->redirect(Helper::get('url')->category('main'));
+            }
+        } elseif (!empty($request->name['edit'])) {
             $fields =  "{$alias}.id, {$alias}.title, {$alias}.slug";
 
             $target = $this->model->getBySlug($request->name['edit'], 'first', array("select" => $fields));
 
-            if(empty($target)) {
+            if (empty($target)) {
                 return $this->redirect(Helper::get('url')->notfound());
             }
         }
 
-        $option = array (
-                            'select' => "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.modified",
-                            'where'  => "{$alias}.parent_id = {$super['id']} AND {$alias}.deleted = 0 AND {$alias}.status > 0"
+        $option = array(
+                        'select' => "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.modified",
+                        'where'  => "{$alias}.parent_id = {$super['id']} AND {$alias}.deleted = 0 AND {$alias}.status > 0"
                     );
 
         $data['list'] = $this->model->find($option);
@@ -80,7 +81,7 @@ class categoryBackend extends backend {
         $root = $this->entity->root($branch);
 
         $data = array('list' => array());
-        $option = array (
+        $option = array(
                         'select' => "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.modified",
         );
 
@@ -99,17 +100,17 @@ class categoryBackend extends backend {
         $alias = $this->model->getAlias();
 
         $target = $this->model->init();
-        if(!empty($request->data[$alias])) {
+        if (!empty($request->data[$alias])) {
             $flag = $this->_save($request->data);
 
-            if($flag) {
+            if ($flag) {
                 return $this->redirect(Helper::get('url')->category('branch', compact('branch')));
             }
 
             $target = $request->data;
         }
 
-        $option['category'] = $this->getParent($branch);
+        $option['category'] = $this->_getParent($branch);
 
         $target = array_merge($target, $this->getSEOInstance());
 
@@ -131,11 +132,11 @@ class categoryBackend extends backend {
         $fields =  "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.parent_id, {$alias}.index, {$alias}.status, {$alias}.seo_id";
 
         $target = $this->model->findById($id, $fields);
-        if(empty($target)) {
+        if (empty($target)) {
             return $this->redirect(Helper::get('url')->notfound());
         }
 
-        $option['category'] = $this->getParent($branch);
+        $option['category'] = $this->_getParent($branch);
         $target = array_merge($target, $this->getSEOInstance($target[$alias]['seo_id']));
 
         return $this->render('add_edit_form', compact('target', 'option'));
@@ -145,17 +146,22 @@ class categoryBackend extends backend {
         $lastInsertId = 0;
 
         $flag = $this->model->save($data[$this->model->getAlias()]);
-        if($flag == false) return false;
+        if ($flag == false) {
+            return false;
+        }
 
         $lastInsertId = empty($data[$this->model->getAlias()]['id']) ? $this->model->lastInsertId() : $data[$this->model->getAlias()]['id'];
 
         $flag = $this->model->tree->rebuild();
-        if($flag == false) return false;
+        if ($flag == false) {
+            return false;
+        }
 
         $affact[$this->model->getAlias()] = $lastInsertId;
 
-        if(empty($data['seo']) == false)
+        if(empty($data['seo']) == false) {
             return $this->_saveSEO($data, $affact);
+        }
 
         return $flag;
     }
@@ -166,7 +172,9 @@ class categoryBackend extends backend {
 
         $lastInsertId = 0;
         $flag = $this->saveSEOInstance($data['seo'], $data[$this->model->getAlias()], 'detail', $lastInsertId);
-        if($flag == false) return false;
+        if ($flag == false) {
+            return false;
+        }
 
         $affact['seo'] = $lastInsertId;
 
@@ -178,7 +186,7 @@ class categoryBackend extends backend {
         return $this->model->update($option);
     }
 
-    protected function getParent($alias, $spacer = '&nbsp;&nbsp;&nbsp;&nbsp;') {
+    protected function _getParent($alias, $spacer = '&nbsp;&nbsp;&nbsp;&nbsp;') {
         $return = $this->entity->branch($alias, $spacer, 'title', 1);
 
         foreach ($return as $key => $value) {
@@ -200,8 +208,9 @@ class categoryBackend extends backend {
             $this->model->delete($condition);
         }
 
-        if(empty($request->query[2]))
+        if(empty($request->query[2])) {
             return $this->redirect(Helper::get('url')->category('main'));
+        }
 
         return $this->redirect(Helper::get('url')->category('branch', array("branch" => $request->query[2])));
     }

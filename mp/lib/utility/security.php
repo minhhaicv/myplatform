@@ -21,7 +21,7 @@
  *
  * @package       Cake.Utility
  */
-class securityHelper {
+class Security {
 
 /**
  * Default hash method

@@ -8,19 +8,19 @@ class category extends Model {
         Helper::get('tree', 'behavior')->load($this);
     }
 
-    function __destruct(){
+    public function __destruct(){
         unset($this);
     }
 
     public function getBySlug($slug='', $type = 'first', $option = array()) {
         $alias = $this->getAlias();
 
-        $default = array (
+        $default = array(
                         'select' => "{$alias}.id",
                         'where' => "{$alias}.slug = '{$slug}' AND {$alias}.status > 0 AND {$alias}.deleted = 0",
         );
 
-        if(!empty($option)) {
+        if (!empty($option)) {
             $default = array_merge($default, $option);
         }
 
@@ -30,7 +30,7 @@ class category extends Model {
     public function getSuperRoot() {
         $alias = $this->getAlias();
 
-        $option = array (
+        $option = array(
                         'select' => "{$alias}.id",
                         'where' => "{$alias}.parent_id = 0 AND {$alias}.status > 0 AND {$alias}.deleted = 0",
         );

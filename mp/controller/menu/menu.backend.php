@@ -14,10 +14,10 @@ class menuBackend extends categoryBackend {
         $alias = $this->model->getAlias();
 
         $target = $this->model->init();
-        if(!empty($request->data[$alias])) {
+        if (!empty($request->data[$alias])) {
             $flag = $this->_save($request->data);
 
-            if($flag) {
+            if ($flag) {
                 return $this->redirect(Helper::get('url')->category('branch', compact('branch')));
             }
 
@@ -37,14 +37,14 @@ class menuBackend extends categoryBackend {
 
         $alias = $this->model->getAlias();
 
-        if(!empty($request->data[$alias])) {
+        if (!empty($request->data[$alias])) {
             $this->_save($request->data);
         }
 
         $fields =  "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.parent_id, {$alias}.index, {$alias}.status, {$alias}.url";
 
         $target = $this->model->findById($id, $fields);
-        if(empty($target)) {
+        if (empty($target)) {
             return $this->redirect(Helper::get('url')->notfound());
         }
 
@@ -59,8 +59,8 @@ class menuBackend extends categoryBackend {
         $root = $this->entity->root($branch);
 
         $data = array('list' => array());
-        $option = array (
-                        'select' => "{$alias}.id, {$alias}.title, {$alias}.url, {$alias}.modified",
+        $option = array(
+                    'select' => "{$alias}.id, {$alias}.title, {$alias}.url, {$alias}.modified",
         );
 
         $data['list'] = $this->entity->extract($root, true, $option);

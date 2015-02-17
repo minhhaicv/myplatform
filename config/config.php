@@ -1,5 +1,6 @@
 <?php
 class config {
+
     public $vars = array(
                 'cdn'           => 'http://mp.me/cdn',
                 'board_url'     => 'http://mp.me',
@@ -25,10 +26,10 @@ class config {
     );
 
     public function getSetting($string = '') {
-        return $this->retrieve($this->setting, $string);
+        return $this->__retrieve($this->setting, $string);
     }
 
-    private function retrieve($target, $string = '') {
+    private function __retrieve($target, $string = '') {
         return Hash::get($target, $string);
     }
 }

@@ -2,18 +2,20 @@
 class htmlHelper{
 
     public function cdn(){
-        global $config, $request;
+        global $request;
 
-        return sprintf('%s/%s', $config->vars['cdn'], $request->channel);
+        return sprintf('%s/%s', Helper::config()->vars['cdn'], $request->channel);
     }
 
     public function js($list = array(), $path = '') {
-        if(empty($path)) $path = 'js';
+        if (empty($path)) {
+            $path = 'js';
+        }
 
         $path = self::cdn() .'/' . $path .'/';
 
         $result = '';
-        foreach($list as $item) {
+        foreach ($list as $item) {
             $src = $path . $item . '.js';
 
             $result .= '<script src="'.$src.'"></script>';
@@ -24,15 +26,18 @@ class htmlHelper{
 
 
     public function css($list = array(), $path = '') {
-        if(empty($path)) $path = 'css';
+        if (empty($path)) {
+            $path = 'css';
+        }
 
         $path = self::cdn() .'/' . $path .'/';
 
         $result = '';
-        foreach($list as $item) {
+        foreach ($list as $item) {
             $src = $path . $item . '.css';
             $result .= '<link rel="stylesheet" type="text/css" rel="stylesheet" href="'.$src.'" />';
         }
+
         return $result;
     }
 }
