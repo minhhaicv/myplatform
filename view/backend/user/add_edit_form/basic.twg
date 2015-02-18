@@ -1,0 +1,77 @@
+<input type='hidden' name='{{ alias }}[id]' value='{{ attribute(target, alias).id }}' />
+
+<table class="table table-bordered formTable">
+    <tr>
+        <th class='col-sm-3 col-md-2'>
+            <label for="title">Account</label>
+            <span class="required">required</span>
+        </th>
+        <td><input class='form-control' name='{{ alias }}[account]' type='text' id='account' value='{{ attribute(target, alias).account  }}' /></td>
+    </tr>
+
+    {% if attribute(target, alias).id > 0 %}
+    <tr>
+        <th class='col-sm-3 col-md-2'>
+            <label for="slug">Password</label>
+        </th>
+        <td>
+            <a href='{{ get('url', 'helper').extend("user/changepassword/" ~ attribute(target, alias).id) }}' title='{{ attribute(target, alias).account }}'>
+                Update password for {{ attribute(target, alias).account }}
+            </a>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <th class='col-sm-3 col-md-2'>
+            <label for="slug">Password</label>
+            <span class="required">required</span>
+        </th>
+        <td><input class='form-control' name='{{ alias }}[password]' type='password' id='password' /></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'>
+            <label for="slug">Confirm Password</label>
+            <span class="required">required</span>
+        </th>
+        <td><input class='form-control' name='{{ alias }}[confirm_password]' type='password' id='confirm_password' /></td>
+    </tr>
+    {% endif %}
+
+    <tr>
+        <th class='col-sm-3 col-md-2'>
+            <label for="slug">Email</label>
+            <span class="required">required</span>
+        </th>
+        <td><input class='form-control' name='{{ alias }}[email]' type='text' id='email' value='{{ attribute(target, alias).email  }}' /></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="slug">Fullname</label></th>
+        <td><input class='form-control' name='{{ alias }}[fullname]' type='text' id='fullname' value='{{ attribute(target, alias).fullname  }}' /></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="index">Group</label></th>
+        <td>
+            <select class="form-control" name='{{ alias }}[group_id]'>
+                <option value="0">Chose group</option>
+                {% for key, value in option.group %}
+                <option value="{{ key }}" {% if key == attribute(target, alias).group_id %} selected='selected' {% endif %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="index">Status</label></th>
+        <td>
+            {% for value, status in ['draft', 'publish'] %}
+            <label class="radio-inline">
+                <input type="radio" value="{{ value }}" name='{{ alias }}[status]' {% if value == attribute(target, alias).status %} checked='checked' {% endif %}/>
+                {{ status }}
+            </label>
+            {% endfor %}
+        </td>
+    </tr>
+</table>

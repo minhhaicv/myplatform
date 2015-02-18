@@ -46,9 +46,9 @@ class urlHelper {
 
         $url = $request->getBaseUrl() . '/' . $request->prefix . '/' . $request->query['module'] . '/' . $type;
 
-        if ($type == 'edit') {
-            $url .= '/' . $id;
-        }
+//         if ($type == 'edit') {
+//             $url .= '/' . $id;
+//         }
 
         return $url;
     }
@@ -72,7 +72,7 @@ class urlHelper {
 
         switch ($type) {
             case 'main':
-                $url .= empty($target['slug']) ? '' : '/edit:' . $target['slug'];
+                $url .= empty($target['slug']) ? '' : '/edit:' . $target['id'];
                 break;
             case 'branch':
                 $url .= empty($target['slug']) ? '' : '/' . $target['slug'];

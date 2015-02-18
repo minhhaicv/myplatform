@@ -16,11 +16,8 @@ class config {
 
     public $setting = array(
                         'security' => array(
-                                        'salt' => 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi',
-                                        'cipherSeed' => '76859309657453542496749683645',
-                                        'test'  => array(
-                                                        'test1' => array('134')
-                                                    )
+                                            'salt' => 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi',
+                                            'cipherSeed' => '76859309657453542496749683645',
                                         ),
                         'locale'   => 'en'
     );

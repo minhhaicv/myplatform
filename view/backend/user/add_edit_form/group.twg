@@ -1,0 +1,23 @@
+<h4>[Add/Edit]</h4>
+
+<form class="form-inline" method='post' enctype="multipart/form-data">
+    {% include 'element/scaffold/add_edit_form/error.twg' %}
+
+    <input type='hidden' name='{{ alias }}[id]' value='{{ attribute(target, alias).id }}' />
+    <table class="table table-bordered highlight">
+        <tr>
+            <td>
+                <label for="title" class="control-label">Group</label>
+                <input class='form-control' id='title' name='{{ alias }}[title]' value='{{ target is defined ? attribute(target, alias).title }}'/>
+                <label for="slug" class="control-label">Status</label>
+                {% for value, status in ['disable', 'enable'] %}
+                <label class="radio-inline">
+                    <input type="radio" value="{{ value }}" name='{{ alias }}[status]' {% if value == attribute(target, alias).status %} checked='checked' {% endif %}/>
+                    {{ status }}
+                </label>
+                {% endfor %}
+                <input type="submit" class="btn btn-primary" value='Save' />
+            </td>
+        </tr>
+    </table>
+</form>

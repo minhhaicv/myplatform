@@ -1,0 +1,61 @@
+<div class='row'>
+    <h3 class="page-header">
+        User
+        <a href='{{ get('url', 'helper').extend("user/group/") }}' title='Group list'>
+            [Group: {{ option.group_name }}]
+        </a>
+    </h3>
+</div>
+
+<div class="box-content">
+    {% include 'user/element/buttons.twg' %}
+
+    <form id='list-form' method='post'>
+        <table class="table table-hover table-bordered ">
+            <thead>
+                <tr>
+                    <th class='text-center list-option'>
+                        <input class='checkall' type='checkbox' />
+                        {{ include('user/element/list-option.twg', {'checkall': 'true', 'form': 'list-form' }) }}
+                    </th>
+                    <th class="col-md-1">Account</th>
+                    <th class="col-md-2">Email</th>
+                    <th class="col-md-2">Fullname</th>
+                    <th>Last Login</th>
+                    <th>Status</th>
+                    <th>Last Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in data.list %}
+                <tr>
+                    <td class='text-center list-option'>
+                        <input class='item' type='checkbox' name='{{ alias }}[{{ attribute(item, alias).id }}]' value='{{ attribute(item, alias).id }}' />
+                        {{ include('user/element/list-option.twg', {'item': item}) }}
+                    </td>
+                    <td>
+                        <a href='{{ get('url', 'helper').extend("user/edit/" ~ attribute(item, alias).id) }}' title='{{ attribute(item, alias).account }}'>
+                        {{ attribute(item, alias).account }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ attribute(item, alias).email }}
+                    </td>
+                    <td>
+                        {{ attribute(item, alias).fullname }}
+                    </td>
+                    <td>
+                        {{ attribute(item, alias).last_login }}
+                    </td>
+                    <td>
+                        {{ attribute(item, alias).status }}
+                    </td>
+                    <td>
+                        {{ attribute(item, alias).modified }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>

@@ -47,31 +47,33 @@ class controller{
     }
 
 
-    public function render ($template = '', $option = array(), $prefix = '') {
+    public function render($template = '', $option = array(), $prefix = '') {
         global $view, $request;
 
-        if (empty($prefix)) {
-            $prefix = $this->templateFolder . DS;
+        if (empty($option['alias'])) {
+            $option['alias'] = $this->model->getAlias();
         }
 
-        $option['alias'] = $this->model->getAlias();
+        if (empty($prefix)) {
+            $prefix = $this->templateFolder;
+        }
 
-        $template = $prefix . $template;
+        $template = $prefix . DS . $template;
 
         return $this->output = $view->render($template, $option);
     }
 
-    function getOutput() {
+    public function getOutput() {
         return $this->output;
     }
 
-    function getLayout(){
+    public function getLayout(){
         return $this->layout;
     }
 
-    protected $output	= '';
-    protected $model	= '';
-    protected $layout 	= 'default';
+    protected $output  = '';
+    protected $model   = '';
+    protected $layout  = 'default';
 
     protected $templateFolder = '';
 }

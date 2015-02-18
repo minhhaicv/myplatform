@@ -1,0 +1,18 @@
+<div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle"
+        data-toggle="dropdown">
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <span
+            class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        {% if checkall is defined %}
+        <li><a href="javascript:void(0);" data-url='{{ get('url', 'helper').extend("user/group/delete") }}' data-form='{{ form }}' class='delete'>Delete</a></li>
+        {% else %}
+        <li>
+            <a href='{{ get('url', 'helper').extend("user/group/edit:" ~ attribute(item, alias).id) }}' title='{{ attribute(item, alias).title }}'>
+                Edit
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>

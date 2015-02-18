@@ -27,6 +27,7 @@
         <th class='col-sm-3 col-md-2'><label for="category">Category</label></th>
         <td>
             <select class="form-control" name='{{ alias }}[category_id]'>
+                <option value="0">Chose category</option>
                 {% for key, value in option.category %}
                 <option value="{{ key }}" {% if key == attribute(target, alias).category_id %} selected='selected' {% endif %}>{{ value }}</option>
                 {% endfor %}
