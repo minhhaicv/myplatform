@@ -94,9 +94,7 @@ class Helper {
         return $config;
     }
 
-///fixed
-
-    static function uses($instance = '', $type = '', $filename = '') {
+    static function uses($instance = '', $type = 'helper', $filename = '') {
         switch ($type) {
             case 'package':
                 self::package($instance, $filename);
@@ -119,7 +117,7 @@ class Helper {
         return $instance;
     }
 
-    static function load($instance = '', $type = '', $arguments = array()) {
+    static function load($instance = '', $type = 'helper', $arguments = array()) {
         $instance = self::uses($instance, $type);
 
         $reflection = new ReflectionClass($instance);
@@ -134,7 +132,7 @@ class Helper {
         self::attach($filename);
     }
 
-    static function def(&$instance = '', $type = '') {
+    static function def(&$instance = '', $type = 'helper') {
         $path = path::load($type);
 
         $filename = $path . $instance . '.' . $type . '.php';
@@ -144,7 +142,7 @@ class Helper {
         $instance = $instance . ucfirst($type);
     }
 
-    static function module(&$module = '', $type = '') {
+    static function module(&$module = '', $type = 'model') {
         $path = path::load('module', $module);
 
         switch ($type) {

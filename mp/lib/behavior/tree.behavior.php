@@ -95,7 +95,7 @@ class treeBehavior extends Model {
         $result = $this->find($option);
 
         foreach($result as $row) {
-            $right = $this->_rebuild($row[$this->alias]['id'], $right);
+            $right = $this->__rebuild($row[$this->alias]['id'], $right);
         }
 
         $option = array(

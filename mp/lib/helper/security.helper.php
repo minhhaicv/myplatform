@@ -1,5 +1,5 @@
 <?php
-class securityAuth{
+class securityHelper{
 
     protected function _salt() {
         return 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi';

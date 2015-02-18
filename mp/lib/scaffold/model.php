@@ -1,7 +1,7 @@
 <?php
 class model{
 
-    public function findById($id, $fields = array()) {
+    public function findById($id, $fields = '') {
         $option = array (
                         'select'=> empty($fields) ? "*" : $fields,
                         'where' => "{$this->alias}.id = {$id} AND {$this->alias}.deleted = 0",
@@ -19,37 +19,28 @@ class model{
     }
 
     private function __findAll($option, $key= 'id') {
-        $tmp = $this->__retrieve($option);
+        $result = $this->__retrieve($option);
 
-        if (empty($tmp)) {
+        if (empty($result)) {
             return array();
         }
 
-        $result = array();
-
-        $checker = current($tmp);
-        if (empty($checker[$this->alias][$key])) {
-            foreach ($tmp as $item) {
-                $result[] = $item;
-            }
-        } else {
-            foreach ($tmp as $item) {
-                $result[$item[$this->alias][$key]] = $item;
-            }
+        if (Hash::check($result, "{n}.{$this->alias}.{$key}")) {
+            return Hash::combine($result, "{n}.{$this->alias}.{$key}", "{n}");
         }
 
         return $result;
     }
 
     private function __findFirst($option) {
-        $result = array();
+        $option['limit'] = 1;
+        $result = $this->__retrieve($option);
 
-        $tmp = $this->__retrieve($option);
-        foreach ($tmp as $item) {
-            $result = $item;
+        if (empty($result)) {
+            return array();
         }
 
-        return $result;
+        return current($result);
     }
 
     private function __findCount($option) {
@@ -63,28 +54,22 @@ class model{
     }
 
     private function __findList($option) {
-        $tmp = $this->__retrieve($option);
+        $result = $this->__retrieve($option);
 
-        $exp = explode(',', $option['select']);
-
-        $result = array();
-
-        if (count($exp) == 1) {
-            $value = strtr($exp[0], array($this->alias.'.' => ''));
-
-            foreach ($tmp as $item) {
-                $result[] = $item[$this->alias][$value];
-            }
-        } else {
-            $key   = strtr($exp[0], array($this->alias.'.' => ''));
-            $value = strtr($exp[1], array($this->alias.'.' => ''));
-
-            foreach ($tmp as $item) {
-                $result[$key] = $item[$this->alias][$value];
-            }
+        if (empty($result)) {
+            return array();
         }
 
-        return $result;
+        $exp = explode(',', strtr($option['select'], array(' ' => '')));
+
+        $key = strtr($exp[0], array($this->alias.'.' => ''));
+        if (empty($exp[1])) {
+           $value = $key;
+        } else {
+            $value = strtr($exp[1], array($this->alias.'.' => ''));
+        }
+
+        return Hash::combine($result, "{n}.{$this->alias}.{$key}", "{n}.{$this->alias}.{$value}");
     }
 
     public function delete($condition = '') {

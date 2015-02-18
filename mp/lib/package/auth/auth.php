@@ -11,12 +11,9 @@ class auth{
     }
 
     protected function _internalAuthenticate($account = '', $password = '') {
-        Helper::package('auth', 'security.auth');
+        $password = Helper::get('security')->hash($password);
+
         $model = Helper::get('user', 'model');
-
-        $security = new securityAuth();
-        $password = $security->hash($password);
-
         $alias = $model->getAlias();
         $option = array(
                         'select' => "{$alias}.id, {$alias}.fullname, {$alias}.group_id",

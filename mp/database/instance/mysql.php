@@ -127,100 +127,6 @@ class Mysql extends Sql{
         return in_array('mysql', PDO::getAvailableDrivers());
     }
 
-
-// /**
-//  * Generates and executes an SQL UPDATE statement for given model, fields, and values.
-//  *
-//  * @param Model $model
-//  * @param array $fields
-//  * @param array $values
-//  * @param mixed $conditions
-//  * @return array
-//  */
-// 	public function update(Model $model, $fields = array(), $values = null, $conditions = null) {
-// 		if (!$this->_useAlias) {
-// 			return parent::update($model, $fields, $values, $conditions);
-// 		}
-
-// 		if (!$values) {
-// 			$combined = $fields;
-// 		} else {
-// 			$combined = array_combine($fields, $values);
-// 		}
-
-// 		$alias = $joins = false;
-// 		$fields = $this->_prepareUpdateFields($model, $combined, empty($conditions), !empty($conditions));
-// 		$fields = implode(', ', $fields);
-// 		$table = $this->fullTableName($model);
-
-// 		if (!empty($conditions)) {
-// 			$alias = $this->name($model->alias);
-// 			if ($model->name === $model->alias) {
-// 				$joins = implode(' ', $this->_getJoins($model));
-// 			}
-// 		}
-// 		$conditions = $this->conditions($this->defaultConditions($model, $conditions, $alias), true, true, $model);
-
-// 		if ($conditions === false) {
-// 			return false;
-// 		}
-
-// 		if (!$this->execute($this->renderStatement('update', compact('table', 'alias', 'joins', 'fields', 'conditions')))) {
-// 			$model->onError();
-// 			return false;
-// 		}
-// 		return true;
-// 	}
-
-// /**
-//  * Generates and executes an SQL DELETE statement for given id/conditions on given model.
-//  *
-//  * @param Model $model
-//  * @param mixed $conditions
-//  * @return boolean Success
-//  */
-// 	public function delete(Model $model, $conditions = null) {
-// 		if (!$this->_useAlias) {
-// 			return parent::delete($model, $conditions);
-// 		}
-// 		$alias = $this->name($model->alias);
-// 		$table = $this->fullTableName($model);
-// 		$joins = implode(' ', $this->_getJoins($model));
-
-// 		if (empty($conditions)) {
-// 			$alias = $joins = false;
-// 		}
-// 		$complexConditions = false;
-// 		foreach ((array)$conditions as $key => $value) {
-// 			if (strpos($key, $model->alias) === false) {
-// 				$complexConditions = true;
-// 				break;
-// 			}
-// 		}
-// 		if (!$complexConditions) {
-// 			$joins = false;
-// 		}
-
-// 		$conditions = $this->conditions($this->defaultConditions($model, $conditions, $alias), true, true, $model);
-// 		if ($conditions === false) {
-// 			return false;
-// 		}
-// 		if ($this->execute($this->renderStatement('delete', compact('alias', 'table', 'joins', 'conditions'))) === false) {
-// 			$model->onError();
-// 			return false;
-// 		}
-// 		return true;
-// 	}
-
-// /**
-//  * Check if the server support nested transactions
-//  *
-//  * @return boolean
-//  */
-// 	public function nestedTransactionSupported() {
-// 		return $this->useNestedTransactions && version_compare($this->getVersion(), '4.1', '>=');
-// 	}
-
     public function getVersion() {
         return $this->_connection->getAttribute(PDO::ATTR_SERVER_VERSION);
     }
@@ -255,9 +161,9 @@ class Mysql extends Sql{
         return false;
     }
 
-///// Pandog
+    protected $editor   = 'editor';
     protected $modified = 'modified';
-    protected $default = array('created', 'modified', 'deleted');
+    protected $default  = array('modified', 'editor', 'created', 'creator', 'deleted');
 
     public function buildQuery($query = array(), $type = "select") {
         if($type == 'select')
@@ -279,6 +185,9 @@ class Mysql extends Sql{
 
         foreach ($query['from'] as $table => $alias) {
             $query['from'] = $prefix . $table . ' AS `' . $alias . '`';
+
+            $query['select'] = strtr($query['select'], array("{$alias}." => "`{$alias}`."));
+
             break;
         }
 
@@ -321,30 +230,35 @@ class Mysql extends Sql{
     }
 
     private function __buildCreate($query) {
-        $data = $query['fields'];
+        $dbFields = $this->getColumn($query['from']);
 
         $from = $this->config['prefix'].$query['from'];
 
+        $data = $query['fields'];
         $tmp = array_merge(array_keys($data), $this->default);
 
         $fields = '';
         foreach($tmp as $key) {
-            $fields .= "`{$key}`,";
+            if (in_array($key, $dbFields)) {
+                $fields .= "`{$key}`,";;
+            } else {
+                unset($data[$key]);
+            }
         }
 
         $fields = trim($fields, ',');
 
         $list = array($data);
 
+        $userId = Session::read('auth.user.id');
+
         $value = array();
         foreach($list as $record) {
             foreach($record as $key => $field) {
-                if(is_int($field)) continue;
-
                 $record[$key] = "'{$field}'";
             }
 
-            $record = array_merge($record, array("NOW()", "NOW()", '0'));
+            $record = array_merge($record, array("NOW()", $userId, "NOW()", $userId, '0'));
             $value[] = implode(', ', $record);
         }
 
@@ -384,7 +298,7 @@ class Mysql extends Sql{
         $prefix = $this->config['prefix'];
 
         $query['from'] = $this->config['prefix'].$query['from'];
-        $query['fields'] = array_merge($query['fields'], array($this->modified => 'NOW()'));
+        $query['fields'] = array_merge($query['fields'], array($this->modified => 'NOW()', $this->editor => Session::read('auth.user.id')));
 
         $fields = '';
         foreach($query['fields'] as $key => $value) {
