@@ -190,6 +190,8 @@ class Request {
 
         if (empty($output)) {
            $this->__alternate($output);
+        } else {
+            $output['request'] = strtolower($output['request']);
         }
 
         $output = $this->__formatGet($output);
