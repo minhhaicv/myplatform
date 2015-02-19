@@ -20,11 +20,15 @@ try {
     register_shutdown_function('deconstructor');
 
     Helper::get('session', 'lib', true);
-
     Helper::get('request', 'lib', true);
 
     Helper::scaffold(array("controller", "model", "entity"));
     $request->conduct();
+
+    if (Helper::get('security')->authenticate() === false) {
+        header ("HTTP/1.1 401 Unauthorized");
+        header ("Location: " . Helper::get('url')->extend('user/login') );
+    }
 
     Helper::get('view', 'lib', true);
     Helper::template();

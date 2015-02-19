@@ -17,16 +17,23 @@ class config {
     public $setting = array(
                         'security' => array(
                                             'salt' => 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi',
-                                            'cipherSeed' => '76859309657453542496749683645',
                                         ),
-                        'locale'   => 'en'
+                        'locale'   => 'en',
+
+                        'authorize'=> array(
+                                            'backend'
+                                        ),
+                        'ignore_authorize' => array(
+                                                'backend' => array('user_login')
+                        ),
+
     );
 
-    public function getSetting($string = '') {
-        return $this->__retrieve($this->setting, $string);
+    public function get($string = null, $target = 'setting') {
+        return Hash::get($this->$target, $string);
     }
 
-    private function __retrieve($target, $string = '') {
-        return Hash::get($target, $string);
+    public function check($string = '', $target = 'setting') {
+        return Hash::check($this->$target, $string);
     }
 }
