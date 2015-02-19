@@ -11,7 +11,7 @@
                 <tr>
                     <th class='text-center list-option'>
                         <input class='checkall' type='checkbox' />
-                        {{ include('category/element/list-option.twg', {'checkall': 'true', 'form': 'list-form' }) }}
+                        {{ include('category/element/list-option.twg', {'checkall': 'true', 'form': 'list-form', 'delete_url': get('url', 'helper').generate("delete/" ~ option.branch) }) }}
                     </th>
                     <th>Title</th>
                     <th>Slug</th>
@@ -23,10 +23,10 @@
                 <tr>
                     <td class='text-center list-option'>
                         <input class='item' type='checkbox' name='{{ alias }}[{{ attribute(item, alias).id }}]' value='{{ attribute(item, alias).id }}' />
-                        {{ include('category/element/list-option.twg', {'option': option, 'item': item, 'url_type': 'edit'}) }}
+                        {{ include('category/element/list-option.twg', {'item': item, 'edit_url': get('url', 'helper').generate("edit/" ~ option.branch ~ '/' ~ attribute(item, alias).id)}) }}
                     </td>
                     <td>
-                        <a href='{{ get('url', 'helper').category('edit', option, attribute(item, alias)) }}' title='{{ attribute(item, alias).title }}'>
+                        <a href='{{ get('url', 'helper').generate('edit/' ~ option.branch ~ '/' ~ attribute(item, alias).id) }}' title='{{ attribute(item, alias).title }}'>
                         {{ attribute(item, alias).title }}
                         </a>
                     </td>

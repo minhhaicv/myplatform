@@ -73,8 +73,10 @@ class model{
     }
 
     public function delete($condition = '') {
+        $userId = Session::read('auth.user.id');
+
         $option = array(
-                        'fields' => array('deleted' => 1),
+                        'fields' => array('modified' => 'NOW()', 'editor' => $userId, 'deleted' => 1),
                         'where' => $condition
         );
 
@@ -82,10 +84,27 @@ class model{
     }
 
     public function save($data) {
+        $userId = Session::read('auth.user.id');
+
         if (empty($data[$this->primaryKey])) {
+            $default = array(
+                            'modified' => 'NOW()',
+                            'editor'   => $userId,
+                            'created'  => 'NOW()',
+                            'creator'  => $userId,
+                            'deleted'  => 0
+            );
+            $data = array_merge($default, $data);
+
             return $this->create($data);
         }
 
+        $default = array(
+                        'modified' => 'NOW()',
+                        'editor'   => $userId,
+                        'deleted'  => 0
+        );
+        $data = array_merge($default, $data);
         $option = array(
                         'fields' => $data,
                         'where' => $this->primaryKey . " = ".$data[$this->primaryKey]
@@ -139,7 +158,7 @@ class model{
 
     public function create($data = array()) {
         $option = array(
-                      'from' => $this->table,
+                      'from'   => $this->table,
                       'fields' => $data
         );
 
@@ -152,6 +171,7 @@ class model{
 
     public function update($data) {
         $data['from'] = $this->table;
+
         $query = Helper::db()->buildQuery($data, 'update');
 
         $q = Helper::db()->renderStatement('update', $query);

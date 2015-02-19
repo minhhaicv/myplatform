@@ -11,6 +11,13 @@
                 <input class='form-control' id='title' name='{{ alias }}[title]' value='{{ target is defined ? attribute(target, alias).title }}'/>
                 <label for="slug" class="control-label">Slug</label>
                 <input class='form-control' id='slug'  name='{{ alias }}[slug]' value='{{ target is defined ? attribute(target, alias).slug }}'/>
+                <label for="slug" class="control-label">Status</label>
+                {% for value, status in ['disable', 'enable'] %}
+                <label class="radio-inline">
+                    <input type="radio" value="{{ value }}" name='{{ alias }}[status]' {% if value == attribute(target, alias).status %} checked='checked' {% endif %}/>
+                    {{ status }}
+                </label>
+                {% endfor %}
                 <input type="submit" class="btn btn-primary" value='Save' />
             </td>
         </tr>

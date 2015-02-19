@@ -161,10 +161,6 @@ class Mysql extends Sql{
         return false;
     }
 
-    protected $editor   = 'editor';
-    protected $modified = 'modified';
-    protected $default  = array('modified', 'editor', 'created', 'creator', 'deleted');
-
     public function buildQuery($query = array(), $type = "select") {
         if($type == 'select')
             return $this->__buildFind($query);
@@ -235,12 +231,12 @@ class Mysql extends Sql{
         $from = $this->config['prefix'].$query['from'];
 
         $data = $query['fields'];
-        $tmp = array_merge(array_keys($data), $this->default);
+        $tmp = array_keys($data);
 
         $fields = '';
         foreach($tmp as $key) {
             if (in_array($key, $dbFields)) {
-                $fields .= "`{$key}`,";;
+                $fields .= "`{$key}`,";
             } else {
                 unset($data[$key]);
             }
@@ -250,19 +246,26 @@ class Mysql extends Sql{
 
         $list = array($data);
 
-        $userId = Session::read('auth.user.id');
-
         $value = array();
         foreach($list as $record) {
             foreach($record as $key => $field) {
-                $record[$key] = "'{$field}'";
+                $record[$key] = $this->__format($field);
             }
 
-            $record = array_merge($record, array("NOW()", $userId, "NOW()", $userId, '0'));
             $value[] = implode(', ', $record);
         }
 
         return compact('fields', 'value', 'from');
+    }
+
+    private function __format($value = '') {
+        $special = array('NOW()');
+
+        if ( in_array($value, $special)) {
+            return $value;
+        }
+
+        return "'{$value}'";
     }
 
     public function create($option) {
@@ -298,17 +301,10 @@ class Mysql extends Sql{
         $prefix = $this->config['prefix'];
 
         $query['from'] = $this->config['prefix'].$query['from'];
-        $query['fields'] = array_merge($query['fields'], array($this->modified => 'NOW()', $this->editor => Session::read('auth.user.id')));
 
         $fields = '';
         foreach($query['fields'] as $key => $value) {
-            $update = $value;
-            if(strpos($value, '`') === false)
-               $update = "'{$value}'";
-
-            if($key == $this->modified) {
-                $update = $value;
-            }
+            $update = $this->__format($value);
 
             $fields .= "`{$key}` = {$update},";
         }

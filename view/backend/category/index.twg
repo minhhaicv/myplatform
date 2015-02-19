@@ -3,7 +3,7 @@
 </div>
 
 <div class="box-content">
-    {% include 'category/add_edit_form/super.twg' %}
+    {% include 'category/add_edit_form/branch.twg' %}
 
     <h4>[Branch]</h4>
     <form id='list-form' method='post'>
@@ -12,10 +12,11 @@
                 <tr>
                     <th class='text-center list-option'>
                         <input class='checkall' type='checkbox' />
-                        {{ include('category/element/list-option.twg', {'checkall': 'true', 'form': 'list-form'}) }}
+                        {{ include('category/element/list-option.twg', {'checkall': 'true', 'form': 'list-form', 'delete_url' : get('url', 'helper').generate("index/delete")}) }}
                     </th>
                     <th>Title</th>
                     <th>Slug</th>
+                    <th>Status</th>
                     <th>Last modified</th>
                 </tr>
             </thead>
@@ -24,15 +25,18 @@
                 <tr>
                     <td class='text-center list-option'>
                         <input class='item' type='checkbox' name='{{ alias }}[{{ attribute(item, alias).id }}]' value='{{ attribute(item, alias).id }}' />
-                        {{ include('category/element/list-option.twg', {'option': option, 'item': item, 'url_type': 'main'}) }}
+                        {{ include('category/element/list-option.twg', {'item': item, 'edit_url': get('url', 'helper').generate("index/edit:" ~ attribute(item, alias).id)}) }}
                     </td>
                     <td>
-                        <a href='{{ get('url', 'helper').category('branch', option, attribute(item, alias)) }}' title='{{ attribute(item, alias).title }}'>
+                        <a href='{{ get('url', 'helper').generate('branch/' ~ attribute(item, alias).slug) }}' title='{{ attribute(item, alias).title }}'>
                             {{ attribute(item, alias).title }}
                         </a>
                     </td>
                     <td>
                         {{ attribute(item, alias).slug }}
+                    </td>
+                    <td>
+                        {{ attribute(item, alias).status }}
                     </td>
                     <td>
                         {{ attribute(item, alias).modified }}

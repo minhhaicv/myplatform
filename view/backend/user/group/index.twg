@@ -27,7 +27,7 @@
                         {{ include('user/group/list-option.twg', {'item': item}) }}
                     </td>
                     <td>
-                        <a href='{{ get('url', 'helper').extend("user/index/group:" ~ attribute(item, alias).id) }}' title='{{ attribute(item, alias).title }}'>
+                        <a href='{{ get('url', 'helper').generate("index/group:" ~ attribute(item, alias).id) }}' title='{{ attribute(item, alias).title }}'>
                             {{ attribute(item, alias).title }}
                         </a>
                     </td>

@@ -15,7 +15,7 @@
             <label for="slug">Password</label>
         </th>
         <td>
-            <a href='{{ get('url', 'helper').extend("user/changepassword/" ~ attribute(target, alias).id) }}' title='{{ attribute(target, alias).account }}'>
+            <a href='{{ get('url', 'helper').generate("changepassword/" ~ attribute(target, alias).id) }}' title='{{ attribute(target, alias).account }}'>
                 Update password for {{ attribute(target, alias).account }}
             </a>
         </td>

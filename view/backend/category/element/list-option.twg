@@ -6,10 +6,10 @@
     </button>
     <ul class="dropdown-menu" role="menu">
         {% if checkall is defined %}
-        <li><a href="javascript:void(0);" data-url='{{ get('url', 'helper').category('delete', option) }}' data-form='{{ form }}' class='delete'>Delete</a></li>
+        <li><a href="javascript:void(0);" data-url='{{ delete_url }}' data-form='{{ form }}' class='delete'>Delete</a></li>
         {% else %}
         <li>
-            <a href='{{ get('url', 'helper').category(url_type, option, attribute(item, alias)) }}' title='{{ attribute(item, alias).title }}'>
+            <a href='{{ edit_url }}' title='{{ attribute(item, alias).title }}'>
                 Edit
             </a>
         </li>

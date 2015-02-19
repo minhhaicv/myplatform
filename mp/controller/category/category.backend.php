@@ -22,57 +22,88 @@ class categoryBackend extends backend {
                 break;
             case 'delete':
                     $this->delete();
+                break;
             default:
-                    $this->main();
+                    $this->index();
                 break;
         }
     }
 
-    public function main() {
+    public function index() {
         global $request;
 
-        $data = array('list' => array());
-
+        $data   = array('list' => array());
         $alias  = $this->model->getAlias();
-
         $super  = $this->entity->superRoot();
 
-        $target = $this->model->init();
-
-        if (!empty($request->data[$alias])) {
-            $flag = $this->saveBranchRoot($super);
-
-            if ($flag) {
-                return $this->redirect(Helper::get('url')->category('main'));
-            }
-        } elseif (!empty($request->name['edit'])) {
-            $fields =  "{$alias}.id, {$alias}.title, {$alias}.slug";
-
-            $target = $this->model->getBySlug($request->name['edit'], 'first', array("select" => $fields));
-
-            if (empty($target)) {
-                return $this->redirect(Helper::get('url')->notfound());
-            }
+        if (empty($request->name['edit']) == false) {
+            $target = $this->__editBranch();
+        } elseif (empty($request->query[2]) == false) {
+            $this->__deleteBranch();
+        } else {
+            $target = $this->__addBranch($super);
         }
 
         $option = array(
-                        'select' => "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.modified",
-                        'where'  => "{$alias}.parent_id = {$super['id']} AND {$alias}.deleted = 0 AND {$alias}.status > 0"
+                        'select' => "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.status, {$alias}.modified",
+                        'where'  => "{$alias}.parent_id = {$super['id']} AND {$alias}.deleted = 0"
                     );
 
         $data['list'] = $this->model->find($option);
 
-        $option = array();
-        $this->render('main', compact('target', 'data', 'option'));
+        $this->render('index', compact('target', 'data'));
     }
 
-    protected function saveBranchRoot($super) {
+    private function __deleteBranch() {
         global $request;
 
-        $alias  = $this->model->getAlias();
-        $request->data[$alias]['parent_id'] = $super['id'];
+        $alias = $this->model->getAlias();
+        if (!empty($request->data[$alias])) {
+            $target = implode(',', $request->data[$alias]);
 
-        return $this->_save($request->data);
+            $condition = 'id IN (' . $target . ')';
+            $this->model->delete($condition);
+        }
+
+        return $this->redirect(Helper::get('url')->generate('index'));
+    }
+
+    private function __editBranch($super = array()) {
+        global $request;
+
+        $id = intval($request->name['edit']);
+
+        $alias = $this->model->getAlias();
+        if (!empty($request->data[$alias])) {
+            $this->_save($request->data);
+        }
+
+        $fields =  "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.status";
+
+        $target = $this->model->findById($id, $fields);
+        if (empty($target)) {
+            return $this->redirect(Helper::get('url')->notfound());
+        }
+
+        return $target;
+    }
+
+    private function __addBranch($super = array()) {
+        global $request;
+
+        $alias = $this->model->getAlias();
+        if (!empty($request->data[$alias])) {
+            $request->data[$alias]['parent_id'] = $super['id'];
+            $flag = $this->_save($request->data);
+
+            if ($flag) {
+                return $this->redirect(Helper::get('url')->generate('index'));
+            }
+
+            return $request->data;
+        }
+
+        return $this->model->init();
     }
 
     public function branch($branch = '') {
@@ -104,7 +135,7 @@ class categoryBackend extends backend {
             $flag = $this->_save($request->data);
 
             if ($flag) {
-                return $this->redirect(Helper::get('url')->category('branch', compact('branch')));
+                return $this->redirect(Helper::get('url')->generate('branch/'.$branch));
             }
 
             $target = $request->data;
@@ -208,10 +239,6 @@ class categoryBackend extends backend {
             $this->model->delete($condition);
         }
 
-        if(empty($request->query[2])) {
-            return $this->redirect(Helper::get('url')->category('main'));
-        }
-
-        return $this->redirect(Helper::get('url')->category('branch', array("branch" => $request->query[2])));
+        return $this->redirect(Helper::get('url')->generate('branch/'.$request->query[2]));
     }
 }

@@ -1,3 +1,3 @@
 <p class='pull-right'>
-    <a class="btn btn-default" href='{{ get('url', 'helper').category('add', option) }}' role="button">Add</a>
+    <a class="btn btn-default" href='{{ get('url', 'helper').extend('category/add/' ~ option.branch) }}' role="button">Add</a>
 </p>

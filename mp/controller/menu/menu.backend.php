@@ -18,13 +18,13 @@ class menuBackend extends categoryBackend {
             $flag = $this->_save($request->data);
 
             if ($flag) {
-                return $this->redirect(Helper::get('url')->category('branch', compact('branch')));
+                return $this->redirect(Helper::get('url')->generate('branch/'.$branch));
             }
 
             $target = $request->data;
         }
 
-        $option['category'] = $this->getParent($branch);
+        $option['category'] = $this->_getParent($branch);
 
         return $this->render('add_edit_form', compact('target', 'option'));
     }
@@ -48,7 +48,7 @@ class menuBackend extends categoryBackend {
             return $this->redirect(Helper::get('url')->notfound());
         }
 
-        $option['category'] = $this->getParent($branch);
+        $option['category'] = $this->_getParent($branch);
 
         return $this->render('add_edit_form', compact('target', 'option'));
     }

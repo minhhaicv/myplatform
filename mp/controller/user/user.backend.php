@@ -164,9 +164,6 @@ class userBackend extends backend {
 
             $condition = 'id IN (' . $target . ')';
             $model->delete($condition);
-
-            $condition = 'group_id IN (' . $target . ')';
-            $this->model->delete($condition);
         }
 
         return $this->redirect(Helper::get('url')->generate('group'));

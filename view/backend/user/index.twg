@@ -16,7 +16,7 @@
                 <tr>
                     <th class='text-center list-option'>
                         <input class='checkall' type='checkbox' />
-                        {{ include('user/element/list-option.twg', {'checkall': 'true', 'form': 'list-form' }) }}
+                        {{ include('user/element/list-option.twg', {'checkall': 'true', 'form': 'list-form'}) }}
                     </th>
                     <th class="col-md-1">Account</th>
                     <th class="col-md-2">Email</th>
@@ -34,7 +34,7 @@
                         {{ include('user/element/list-option.twg', {'item': item}) }}
                     </td>
                     <td>
-                        <a href='{{ get('url', 'helper').extend("user/edit/" ~ attribute(item, alias).id) }}' title='{{ attribute(item, alias).account }}'>
+                        <a href='{{ get('url', 'helper').generate("edit/" ~ attribute(item, alias).id) }}' title='{{ attribute(item, alias).account }}'>
                         {{ attribute(item, alias).account }}
                         </a>
                     </td>
