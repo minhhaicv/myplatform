@@ -30,10 +30,10 @@ class Helper {
     }
 
     static function template() {
-        global $template, $request, $config;
+        global $template, $request;
 
         if (is_null($template)) {
-            $folder = $config->view[$request->channel];
+            $folder = self::config()->view[$request->channel];
 
             self::attach(LIB."parse-engine".DS."Twig".DS."Autoloader.php", false);
             Twig_Autoloader::register();
@@ -64,7 +64,7 @@ class Helper {
         $path = LIB . 'scaffold' . DS;
 
         foreach ($name as $value) {
-            self::attach($path . $value . '.php', false);
+            self::attach($path . $value . '.php', true  , false);
         }
     }
 
@@ -187,21 +187,19 @@ class Helper {
         self::attach($filename);
     }
 
-    static function attach($filename = "", $relative = true) {
-        try {
-            if (empty($relative)) {
-                return require_once($filename);
-            }
-
+    static function attach($filename = "", $relative = true, $exception = true) {
+        if ($relative) {
             if (file_exists(ROOT . $filename)) {
                 $filename = ROOT . $filename;
             } else {
                 $filename = MP . $filename;
             }
+        }
 
-            return require_once($filename);
-        } catch (Exception $e) {
-            throw new Exception(sprintf('Cannot import [%s] by require_once!', $path));
+        if (file_exists(ROOT . $filename)) {
+            require_once $filename;
+        } elseif($exception) {
+            throw new InternalErrorException('file not found: '.$filename);
         }
     }
 }

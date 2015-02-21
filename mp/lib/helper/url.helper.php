@@ -35,12 +35,6 @@ class urlHelper {
         return $url;
     }
 
-    public function notfound() {
-        global $request;
-
-        return $request->getBaseUrl() . '/error/notfound';
-    }
-
     public function generate($url = 'list') {
         global $request;
 
@@ -50,6 +44,11 @@ class urlHelper {
     public function extend($url = '') {
         global $request;
 
-        return $request->getBaseUrl() . '/' . $request->prefix . '/' . $url;
+        $return = $request->getBaseUrl() . '/';
+        if (empty($request->prefix) == false) {
+            $return .= $request->prefix . '/';
+        }
+
+        return $return . $url;
     }
 }

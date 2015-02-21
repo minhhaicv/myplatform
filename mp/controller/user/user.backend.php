@@ -25,10 +25,18 @@ class userBackend extends backend {
             case 'delete':
                     $this->delete();
                 break;
+            case 'logout':
+                    $this->logout();
+                break;
             default:
                     $this->login();
                 break;
         }
+    }
+
+    public function logout() {
+        Session::destroy();
+        $this->redirect(Helper::get('url')->generate('login'));
     }
 
     public function delete() {
@@ -92,7 +100,7 @@ class userBackend extends backend {
 
         $target = $this->model->findById($id, $fields);
         if (empty($target)) {
-            return $this->redirect(Helper::get('url')->notfound());
+            throw new NotFoundException();
         }
 
         $option = array('group' => $this->__availableGroup());
@@ -198,7 +206,7 @@ class userBackend extends backend {
 
         $target = $model->findById($id, $fields);
         if (empty($target)) {
-            return $this->redirect(Helper::get('url')->notfound());
+            throw new NotFoundException();
         }
 
         return $target;

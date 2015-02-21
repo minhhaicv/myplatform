@@ -7,8 +7,9 @@ class config {
                 'debug'         => 2,
         );
 
+    //channel -> folder
     public $view = array(
-                       'frontend' => 'frontend',
+                       'blank' => 'default',
                        'backend'   => 'backend',
     );
 
@@ -24,7 +25,10 @@ class config {
                                             'backend'
                                         ),
                         'ignore_authorize' => array(
-                                                'backend' => array('user_login')
+                                                'backend' => array(
+                                                                'user'  => array('login', 'logout'),
+                                                                'error' => array()
+                                                            )
                         ),
 
     );

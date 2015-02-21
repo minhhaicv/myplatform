@@ -82,7 +82,7 @@ class categoryBackend extends backend {
 
         $target = $this->model->findById($id, $fields);
         if (empty($target)) {
-            return $this->redirect(Helper::get('url')->notfound());
+            throw new NotFoundException();
         }
 
         return $target;
@@ -164,7 +164,7 @@ class categoryBackend extends backend {
 
         $target = $this->model->findById($id, $fields);
         if (empty($target)) {
-            return $this->redirect(Helper::get('url')->notfound());
+            throw new NotFoundException();
         }
 
         $option['category'] = $this->_getParent($branch);

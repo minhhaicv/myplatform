@@ -45,7 +45,7 @@ class menuBackend extends categoryBackend {
 
         $target = $this->model->findById($id, $fields);
         if (empty($target)) {
-            return $this->redirect(Helper::get('url')->notfound());
+            throw new NotFoundException();
         }
 
         $option['category'] = $this->_getParent($branch);

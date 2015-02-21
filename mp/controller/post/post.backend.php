@@ -87,7 +87,7 @@ class postBackend extends backend {
 
         $target = $this->model->findById($id, $fields);
         if (empty($target)) {
-            return $this->redirect(Helper::get('url')->notfound());
+            throw new NotFoundException();
         }
 
         $target = array_merge($target, $this->getSEOInstance($target[$alias]['seo_id']));

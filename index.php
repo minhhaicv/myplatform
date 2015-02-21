@@ -1,8 +1,10 @@
 <?php
-require_once "./config/constant.php";
-require_once MP . "global.php";
-require_once LIB . 'utility/path.php';
-require_once MP . 'helper.php';
+require_once './config/constant.php';
+
+require_once MP  . 'global.php';
+require_once LIB . 'utility' . DS . 'path.php';
+require_once MP  . 'helper.php';
+require_once LIB . 'utility' . DS . 'exception.php';
 
 $mem = memory_get_usage();
 $time = microtime(true);
@@ -24,10 +26,8 @@ try {
 
     Helper::scaffold(array("controller", "model", "entity"));
     $request->conduct();
-
     if (Helper::get('security')->authenticate() === false) {
-        header ("HTTP/1.1 401 Unauthorized");
-        header ("Location: " . Helper::get('url')->extend('user/login') );
+        throw new NotFoundException();
     }
 
     Helper::get('view', 'lib', true);
@@ -35,13 +35,8 @@ try {
 
     $app->execute();
 }
-
 catch (Exception $e) {
-    echo 'exception';
-
-    print "<pre>";
-    print_r($e);
-    print "</pre>";
+    Helper::get('error', 'entity')->handler($e);
 }
 
 print_r(array(

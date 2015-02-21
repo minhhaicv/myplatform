@@ -210,7 +210,6 @@ class Request {
         return true;
     }
 
-
     private function __formatGet($input) {
         $prefix = $channel = '';
         $query  = $name = $param = array();
@@ -244,6 +243,10 @@ class Request {
                     }
 
                     continue;
+                } else {
+                    if (in_array($value, $prefixList)) {
+                        $prefix = $value;
+                    }
                 }
 
                 $query[] = $value;

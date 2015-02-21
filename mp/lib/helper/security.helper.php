@@ -15,11 +15,18 @@ class securityHelper{
         $prefix = $request->prefix;
 
         if (in_array($prefix, Helper::config()->get('authorize'))) {
-            $match = $request->query['module'].'_'.$request->query['action'];
-
             $ignore = Helper::config()->get('ignore_authorize.'.$prefix);
-            if (in_array($match, $ignore)) {
-                return true;
+
+            if (empty($ignore) == false) {
+                if (isset($ignore[$request->query['module']])) {
+                    if (empty($ignore[$request->query['module']])) {
+                        return true;
+                    }
+
+                    if (in_array($request->query['action'], $ignore[$request->query['module']])) {
+                        return true;
+                    }
+                }
             }
 
             return Session::check('auth.user.id');

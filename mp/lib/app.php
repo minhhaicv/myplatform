@@ -1,21 +1,12 @@
 <?php
 class App {
 
-    public function __construct() {
-        $this->basic();
-    }
-
-    public function basic() {
-        Helper::attach(LIB . 'package' . DS . 'error' . DS . 'exception.php', false);
-    }
-
-
     public function execute() {
         global $request, $view;
 
         $channel = $request->channel;
-        $module = $request->query['module'];
-        $path = $module . DS . $module . "." . $channel . ".php";
+        $module  = $request->query['module'];
+        $path    = $module . DS . $module . "." . $channel . ".php";
 
         $path = "controller" . DS . $path;
 
