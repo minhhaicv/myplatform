@@ -1,23 +1,23 @@
 <?php
 class Request {
 
-// 	protected $_detectors = array(
-// 		'get' => array('env' => 'REQUEST_METHOD', 'value' => 'GET'),
-// 		'post' => array('env' => 'REQUEST_METHOD', 'value' => 'POST'),
-// 		'put' => array('env' => 'REQUEST_METHOD', 'value' => 'PUT'),
-// 		'delete' => array('env' => 'REQUEST_METHOD', 'value' => 'DELETE'),
-// 		'head' => array('env' => 'REQUEST_METHOD', 'value' => 'HEAD'),
-// 		'options' => array('env' => 'REQUEST_METHOD', 'value' => 'OPTIONS'),
-// 		'ssl' => array('env' => 'HTTPS', 'value' => 1),
-// 		'ajax' => array('env' => 'HTTP_X_REQUESTED_WITH', 'value' => 'XMLHttpRequest'),
-// 		'flash' => array('env' => 'HTTP_USER_AGENT', 'pattern' => '/^(Shockwave|Adobe) Flash/'),
-// 		'mobile' => array('env' => 'HTTP_USER_AGENT', 'options' => array(
-// 			'Android', 'AvantGo', 'BlackBerry', 'DoCoMo', 'Fennec', 'iPod', 'iPhone', 'iPad',
-// 			'J2ME', 'MIDP', 'NetFront', 'Nokia', 'Opera Mini', 'Opera Mobi', 'PalmOS', 'PalmSource',
-// 			'portalmmm', 'Plucker', 'ReqwirelessWeb', 'SonyEricsson', 'Symbian', 'UP\\.Browser',
-// 			'webOS', 'Windows CE', 'Windows Phone OS', 'Xiino'
-// 		)),
-// 	);
+    protected $_detectors = array(
+        'get' => array('env' => 'REQUEST_METHOD', 'value' => 'GET'),
+        'post' => array('env' => 'REQUEST_METHOD', 'value' => 'POST'),
+        'put' => array('env' => 'REQUEST_METHOD', 'value' => 'PUT'),
+        'delete' => array('env' => 'REQUEST_METHOD', 'value' => 'DELETE'),
+        'head' => array('env' => 'REQUEST_METHOD', 'value' => 'HEAD'),
+        'options' => array('env' => 'REQUEST_METHOD', 'value' => 'OPTIONS'),
+        'ssl' => array('env' => 'HTTPS', 'value' => 1),
+        'ajax' => array('env' => 'HTTP_X_REQUESTED_WITH', 'value' => 'XMLHttpRequest'),
+        'flash' => array('env' => 'HTTP_USER_AGENT', 'pattern' => '/^(Shockwave|Adobe) Flash/'),
+        'mobile' => array('env' => 'HTTP_USER_AGENT', 'options' => array(
+            'Android', 'AvantGo', 'BlackBerry', 'DoCoMo', 'Fennec', 'iPod', 'iPhone', 'iPad',
+            'J2ME', 'MIDP', 'NetFront', 'Nokia', 'Opera Mini', 'Opera Mobi', 'PalmOS', 'PalmSource',
+            'portalmmm', 'Plucker', 'ReqwirelessWeb', 'SonyEricsson', 'Symbian', 'UP\\.Browser',
+            'webOS', 'Windows CE', 'Windows Phone OS', 'Xiino'
+        )),
+    );
 
 
 /**
@@ -177,8 +177,8 @@ class Request {
         return array_slice($segments, 0, -1 * ($tldLength + 1));
     }
 
-    public function getBaseUrl() {
-        return Helper::config()->vars['board_url'];
+    public function baseUrl() {
+        return $_SERVER['REQUEST_SCHEME'] . '://'.$_SERVER['SERVER_NAME'];
     }
 
     public function conduct() {

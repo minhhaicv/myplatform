@@ -52,8 +52,20 @@ class Helper {
             $function = new Twig_SimpleFunction("get", function ($name, $type) {
                 return Helper::get($name, $type);
             });
-
             $template->addFunction($function);
+
+            $filter = new Twig_SimpleFilter('link', function ($string) {
+                if (strpos($string, 'http://') === 0 ||
+                    strpos($string, 'https://') === 0 ||
+                    strpos($string, 'www') === 0 ) {
+                    return $string;
+                }
+
+                $string = Helper::get('request', 'lib', true)->baseUrl() . '/' . ltrim($string, '/');
+                return $string;
+            });
+            $template->addFilter($filter);
+
             $template->addExtension(new Twig_Extension_Debug());
         }
 

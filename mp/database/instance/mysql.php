@@ -25,8 +25,7 @@
  * @package       Cake.Model.Datasource.Database
  */
 
-require (MP . 'database/dbo/sql.php');
-
+Helper::attach(MP.'database'.DS.'dbo'.DS.'sql.php');
 
 class Mysql extends Sql{
 

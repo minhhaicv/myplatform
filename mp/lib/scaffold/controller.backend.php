@@ -13,7 +13,7 @@ class backend extends controller{
     public function saveSEOInstance($data = array(), $target = array(), $type = 'detail', &$lastInsertId = 0) {
         $entity = Helper::load('seo', 'entity');
 
-        $data['url'] = Helper::get("url")->seo($target, $type);
+        $data['url'] = $entity->realUrl($type, $target);
 
         $data['foreign_key']      = $target['id'];
         $data['foreign_category'] = $target['category_id'];

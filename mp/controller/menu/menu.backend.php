@@ -41,7 +41,7 @@ class menuBackend extends categoryBackend {
             $this->_save($request->data);
         }
 
-        $fields =  "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.parent_id, {$alias}.index, {$alias}.status, {$alias}.url";
+        $fields =  "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.parent_id, {$alias}.index, {$alias}.status, {$alias}.url, {$alias}.caption";
 
         $target = $this->model->findById($id, $fields);
         if (empty($target)) {
@@ -60,10 +60,11 @@ class menuBackend extends categoryBackend {
 
         $data = array('list' => array());
         $option = array(
-                    'select' => "{$alias}.id, {$alias}.title, {$alias}.url, {$alias}.modified",
+                    'select' => "{$alias}.id, {$alias}.title, {$alias}.url, {$alias}.caption, {$alias}.index, {$alias}.modified",
         );
 
-        $data['list'] = $this->entity->extract($root, true, $option);
+        $data['list'] = $this->entity->extract($root, true, $option, true);
+
         $this->entity->model->tree->indent($data['list'], '&nbsp;&nbsp;&nbsp;&nbsp;', 'title');
 
         $option = compact('branch');

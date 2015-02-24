@@ -19,7 +19,7 @@ class view {
         if (empty($layout)) {
             echo $content;
         } else {
-            $title = 'twig test';
+            $title = Helper::config()->get('website.page_title');
 
             $addon = Helper::get('addon', 'component')->get();
             $layout = 'layout' . DS . $layout;

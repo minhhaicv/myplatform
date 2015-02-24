@@ -174,7 +174,7 @@ class treeBehavior extends Model {
         $this->update($option);
     }
 
-    public function extract($id = '', $childOnly = false, $custom = array()) {
+    public function extract($id = '', $childOnly = false, $custom = array(), $indent = false) {
         $option = array(
                         'select' => "{$this->alias}.lft, {$this->alias}.rght",
                         'where' => "{$this->alias}.id = {$id} AND {$this->alias}.status > 0 AND {$this->alias}.deleted = 0",
@@ -200,7 +200,9 @@ class treeBehavior extends Model {
 
         $option = array_merge($option, $custom);
 
-        $option['select'] .= ", {$this->alias}.lft, {$this->alias}.rght";
+        if ($indent == true) {
+            $option['select'] .= ", {$this->alias}.lft, {$this->alias}.rght";
+        }
 
         return $this->find($option);
     }

@@ -4,7 +4,7 @@ class htmlHelper{
     public function cdn(){
         global $request;
 
-        return sprintf('%s/%s', Helper::config()->vars['cdn'], $request->channel);
+        return sprintf('%s/%s', Helper::config()->get('url.cdn'), $request->channel);
     }
 
     public function js($list = array(), $path = '') {

@@ -91,9 +91,7 @@ class Sql{
     protected $_queriesLog = array();
 
     public function __construct($config = array()) {
-        global $config;
-
-        $this->fullDebug = $config->vars['debug'] > 1;
+        $this->fullDebug = Helper::config()->get('debug') > 1;
     }
 
     public function renderStatement($type, $data) {

@@ -27,7 +27,7 @@ class categoryEntity extends entity{
         return $this->model->tree->flat($this->root($branch), $spacer, $display, $level);
     }
 
-    public function extract($id = '', $childOnly = false, $option = array()) {
-        return $this->model->tree->extract($id, $childOnly, $option);
+    public function extract($id = '', $childOnly = false, $option = array(), $indent = false) {
+        return $this->model->tree->extract($id, $childOnly, $option, $indent);
     }
 }

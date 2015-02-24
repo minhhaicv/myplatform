@@ -1,12 +1,6 @@
 <?php
 class config {
 
-    public $vars = array(
-                'cdn'           => 'http://mp.me/cdn',
-                'board_url'     => 'http://mp.me',
-                'debug'         => 2,
-        );
-
     //channel -> folder
     public $view = array(
                        'blank' => 'default',
@@ -16,20 +10,42 @@ class config {
     public $prefix = array('backend');
 
     public $setting = array(
+                        'debug'     => 2,
+
+                        'locale'   => 'en',
+
                         'security' => array(
                                             'salt' => 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi',
-                                        ),
-                        'locale'   => 'en',
+                        ),
 
                         'authorize'=> array(
                                             'backend'
-                                        ),
+                        ),
+
                         'ignore_authorize' => array(
                                                 'backend' => array(
                                                                 'user'  => array('login', 'logout'),
                                                                 'error' => array()
-                                                            )
+                                                )
                         ),
+
+                        'upload' => array(
+                                        'max_size' => 5,
+                                        'directory' => array(
+                                                        'post' => 'bai-viet',
+                                                        'file' => 'bai-viet'
+                                        ),
+
+                        ),
+
+                        'url'   => array(
+                                        'media'     => 'http://mp.me/media',
+                                        'cdn'       => 'http://www.mp.me/cdn',
+                        ),
+
+                        'website' => array(
+                                        'page_title' => 'Chuyên trang phụ nữ',
+                        )
 
     );
 

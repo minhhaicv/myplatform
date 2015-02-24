@@ -20,7 +20,7 @@ class postBackend extends backend {
                     $this->delete();
                 break;
             default :
-                    $this->main();
+                    $this->index();
                 break;
         }
     }
@@ -40,7 +40,7 @@ class postBackend extends backend {
     }
 
 
-    public function main($category = '') {
+    public function index($category = '') {
         global $request;
 
         $entity = Helper::load('category', 'entity');
@@ -69,7 +69,7 @@ class postBackend extends backend {
         $data = $this->paginate($option, true);
         $data['category'] = $lists;
 
-        $this->render('main', compact('data'));
+        $this->render('index', compact('data'));
     }
 
     public function edit($id = 0) {
@@ -79,6 +79,12 @@ class postBackend extends backend {
         $option = array();
 
         if (!empty($request->data[$this->model->getAlias()])) {
+            if (empty($request->data['file']) == false) {
+                reset($request->data['file']);
+
+                $request->data[$this->model->getAlias()]['file_id'] = current($request->data['file']);
+            }
+
             $this->_save($request->data);
         }
 
@@ -105,6 +111,12 @@ class postBackend extends backend {
 
         $target = $this->model->init();
         if (!empty($request->data[$alias])) {
+            if (empty($request->data['file']) == false) {
+                reset($request->data['file']);
+
+                $request->data[$this->model->getAlias()]['file_id'] = current($request->data['file']);
+            }
+
             $flag = $this->_save($request->data);
 
             if ($flag) {

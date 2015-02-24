@@ -9,11 +9,10 @@
         <li><a href="javascript:void(0);" data-url='{{ get('url', 'helper').generate('delete', {}) }}' data-form='{{ form }}' class='delete'>Delete</a></li>
         {% else %}
         <li>
-            <a href='{{ get('url', 'helper').generate('edit', attribute(item, alias).id) }}' title='{{ attribute(item, alias).title }}'>
+            <a href='{{ get('url', 'helper').generate('edit/'~attribute(item, alias).id) }}' title='{{ attribute(item, alias).title }}'>
                 Edit
             </a>
         </li>
         {% endif %}
-
     </ul>
 </div>

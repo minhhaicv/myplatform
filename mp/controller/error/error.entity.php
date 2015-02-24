@@ -16,6 +16,7 @@ class errorEntity extends entity {
         );
 
         $controller = new controller();
+
         $url = empty($list[$code]) ? 'internal' : $list[$code];
 
         $controller->redirect(Helper::get('url')->extend('error/'. $url), $code);

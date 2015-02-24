@@ -2,15 +2,24 @@
 
 <table class="table table-bordered formTable">
     <tr>
-        <th class='col-sm-3 col-md-2'><label for="title">Title</label> <span
-            class="required">required</span></th>
+        <th class='col-sm-3 col-md-2'>
+            <label for="title">Title</label>
+            <span class="required">required</span>
+        </th>
         <td><input class='form-control' name='{{ alias }}[title]' type='text' id='title' value='{{ attribute(target, alias).title  }}' /></td>
     </tr>
 
     <tr>
-        <th class='col-sm-3 col-md-2'><label for="url">Url</label> <span
-            class="required">required</span></th>
+        <th class='col-sm-3 col-md-2'>
+            <label for="url">Url</label>
+            <span class="required">required</span>
+        </th>
         <td><input class='form-control' name='{{ alias }}[url]' type='text' id='url' value='{{ attribute(target, alias).url  }}' /></td>
+    </tr>
+
+    <tr>
+        <th class='col-sm-3 col-md-2'><label for="url">Caption</label></th>
+        <td><input class='form-control' name='{{ alias }}[caption]' type='text' id='url' value='{{ attribute(target, alias).caption }}' /></td>
     </tr>
 
     <tr>

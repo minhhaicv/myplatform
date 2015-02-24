@@ -14,13 +14,13 @@ class errorBackend extends controller {
                     $this->notfound();
                 break;
             case 'badrequest':
-                $this->badrequest();
+                    $this->badrequest();
                 break;
             case 'unauthorized':
-                $this->unauthorized();
+                    $this->unauthorized();
                 break;
             case 'forbidden':
-                $this->forbidden();
+                    $this->forbidden();
                 break;
             default:
                     $this->internal();

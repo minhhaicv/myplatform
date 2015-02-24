@@ -27,4 +27,10 @@ class seoEntity extends entity {
     public function save($data = array()) {
         return $this->model->save($data);
     }
+
+    public function realUrl($type = '', $target = '') {
+        global $request;
+
+        return $request->query['module'] . '/' . $type . '/' . $target['id'];
+    }
 }

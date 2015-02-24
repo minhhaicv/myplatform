@@ -21,7 +21,7 @@
                 {% include 'element/scaffold/list-option.twg' %}
             </td>
             <td>
-                <a href='{{ get('url', 'helper').generate('edit', attribute(item, alias).id) }}' title='{{ attribute(item, alias).title }}'>
+                <a href='{{ get('url', 'helper').generate('edit/' ~ attribute(item, alias).id) }}' title='{{ attribute(item, alias).title }}'>
                 {{ attribute(item, alias).title }}
                 </a>
             </td>

@@ -15,6 +15,8 @@
                     </th>
                     <th>Title</th>
                     <th>Url</th>
+                    <th>Caption</th>
+                    <th>Order</th>
                     <th>Last modified</th>
                 </tr>
             </thead>
@@ -26,12 +28,18 @@
                         {{ include('menu/element/list-option.twg', {'item': item, 'edit_url' : get('url', 'helper').generate('edit/' ~ option.branch ~ '/' ~ attribute(item, alias).id)}) }}
                     </td>
                     <td>
-                        <a href='' title='{{ attribute(item, alias).title }}'>
+                        <a href='' title='{{ attribute(item, alias).caption }}'>
                         {{ attribute(item, alias).title }}
                         </a>
                     </td>
                     <td>
                         {{ attribute(item, alias).url }}
+                    </td>
+                    <td>
+                        {{ attribute(item, alias).caption }}
+                    </td>
+                    <td>
+                        {{ attribute(item, alias).index }}
                     </td>
                     <td>
                         {{ attribute(item, alias).modified }}

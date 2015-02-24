@@ -4,7 +4,7 @@
 
 <div class="box-content">
     <div class="table-responsive">
-        <form method='post' enctype="multipart/form-data">
+        <form method='post' enctype="multipart/form-data" id='fileupload'>
             <h4>[Basic]</h4>
             {% include 'element/scaffold/add_edit_form/error.twg' %}
             {% include 'element/scaffold/add_edit_form/basic.twg' %}

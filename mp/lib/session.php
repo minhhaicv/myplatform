@@ -1,6 +1,4 @@
 <?php
-Helper::attach(LIB . 'utility/hash.php');
-
 class Session {
 
     public function __construct() {

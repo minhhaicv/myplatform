@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,7 +8,7 @@
     <meta name="author" content="">
 
 
-    <title>{{ title }}fds</title>
+    <title>{{ title }}</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" />
 
     {{ get('html', 'helper').css(['bootstrap.min', 'common']) }}

@@ -10,7 +10,7 @@ class categoryBackend extends backend {
     public function navigator(){
         global $request;
 
-        switch($request->query['action']){
+        switch($request->query['action']) {
             case 'add':
                     $this->add($request->query[2]);
                 break;
@@ -116,7 +116,7 @@ class categoryBackend extends backend {
                         'select' => "{$alias}.id, {$alias}.title, {$alias}.slug, {$alias}.modified",
         );
 
-        $data['list'] = $this->entity->extract($root, true, $option);
+        $data['list'] = $this->entity->extract($root, true, $option, true);
         $this->entity->model->tree->indent($data['list'], '&nbsp;&nbsp;&nbsp;&nbsp;', 'title');
 
         $option = compact('branch');

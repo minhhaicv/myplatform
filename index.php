@@ -12,12 +12,12 @@ $time = microtime(true);
 try {
     Helper::app();
 
+    Helper::uses('hash', 'utility');
     Helper::uses('security', 'utility');
     Helper::uses('sanitize', 'utility');
 
-    Helper::config();
-
     Helper::db(true)->connect();
+    Helper::config();
 
     register_shutdown_function('deconstructor');
 
@@ -26,8 +26,9 @@ try {
 
     Helper::scaffold(array("controller", "model", "entity"));
     $request->conduct();
+
     if (Helper::get('security')->authenticate() === false) {
-        throw new NotFoundException();
+        throw new UnauthorizedException();
     }
 
     Helper::get('view', 'lib', true);
