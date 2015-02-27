@@ -1,0 +1,40 @@
+<form id='list-form' method='post'>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th class='text-center list-option'>
+                    <input class='checkall' type='checkbox' />
+                    {{ include('locale/element/list-option.twg', {'checkall': 'true', 'form': 'list-form', 'delete_url' : get('url', 'helper').generate("delete")}) }}
+                </th>
+                <th>Code</th>
+                {% for item in available %}
+                <th>{{ item }}</th>
+                {% endfor %}
+                <th>Last modified</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in data.list %}
+            <tr>
+                <td class='text-center list-option'>
+                    <input class='item' type='checkbox' name='{{ alias }}[{{ attribute(item, alias).id }}]' value='{{ attribute(item, alias).id }}' />
+                    {{ include('locale/element/list-option.twg', {'item': item, 'edit_url': get('url', 'helper').generate("edit/" ~ attribute(item, alias).id)}) }}
+                </td>
+                <td>
+                    <a href='{{ get('url', 'helper').generate('edit/' ~ attribute(item, alias).id) }}' title='{{ attribute(item, alias).code }}'>
+                        {{ attribute(item, alias).code }}
+                    </a>
+                </td>
+                {% for key, locale in available %}
+                <td>
+                    {{ attribute(attribute(item, alias), 'locale_'~key) }}
+                </td>
+                {% endfor %}
+                <td>
+                    {{ attribute(item, alias).modified }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</form>

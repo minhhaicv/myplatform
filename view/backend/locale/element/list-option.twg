@@ -1,0 +1,18 @@
+<div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle"
+        data-toggle="dropdown">
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <span
+            class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        {% if checkall is defined %}
+        <li><a href="javascript:void(0);" data-url='{{ delete_url }}' data-form='{{ form }}' class='delete'>Delete</a></li>
+        {% else %}
+        <li>
+            <a href='{{ edit_url }}' title='{{ attribute(item, alias).code }}'>
+                Edit
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>

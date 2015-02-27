@@ -1,0 +1,22 @@
+<input type='hidden' name='{{ alias }}[id]' value='{{ attribute(target, alias).id }}' />
+
+<table class="table table-bordered formTable">
+    <tr>
+        <th class='col-sm-3 col-md-2'>
+            <label for="title">Code</label>
+            <span class="required">required</span>
+        </th>
+        <td>
+        <input class='form-control' name='{{ alias }}[code]' type='text' id='code' value='{{ attribute(target, alias).code }}' />
+        </td>
+    </tr>
+
+    {% for key, locale in available %}
+    <tr>
+        <th class='col-sm-3 col-md-2'>
+            <label for="{{ 'locale_'~key }}">{{ locale }}</label>
+        </th>
+        <td><input class='form-control' name='{{ alias }}[{{ 'locale_'~key }}]' type='text' id='{{ 'locale_'~key }}' value='{{ attribute(attribute(target, alias), 'locale_'~key) }}' /></td>
+    </tr>
+    {% endfor %}
+</table>

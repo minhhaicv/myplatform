@@ -29,72 +29,72 @@ class String {
  * @see http://www.ietf.org/rfc/rfc4122.txt
  * @return RFC 4122 UUID
  */
-	public static function uuid() {
-		$node = env('SERVER_ADDR');
+    public static function uuid() {
+        $node = env('SERVER_ADDR');
 
-		if (strpos($node, ':') !== false) {
-			if (substr_count($node, '::')) {
-				$node = str_replace(
-					'::', str_repeat(':0000', 8 - substr_count($node, ':')) . ':', $node
-				);
-			}
-			$node = explode(':', $node);
-			$ipSix = '';
+        if (strpos($node, ':') !== false) {
+            if (substr_count($node, '::')) {
+                $node = str_replace(
+                    '::', str_repeat(':0000', 8 - substr_count($node, ':')) . ':', $node
+                );
+            }
+            $node = explode(':', $node);
+            $ipSix = '';
 
-			foreach ($node as $id) {
-				$ipSix .= str_pad(base_convert($id, 16, 2), 16, 0, STR_PAD_LEFT);
-			}
-			$node = base_convert($ipSix, 2, 10);
+            foreach ($node as $id) {
+                $ipSix .= str_pad(base_convert($id, 16, 2), 16, 0, STR_PAD_LEFT);
+            }
+            $node = base_convert($ipSix, 2, 10);
 
-			if (strlen($node) < 38) {
-				$node = null;
-			} else {
-				$node = crc32($node);
-			}
-		} elseif (empty($node)) {
-			$host = env('HOSTNAME');
+            if (strlen($node) < 38) {
+                $node = null;
+            } else {
+                $node = crc32($node);
+            }
+        } elseif (empty($node)) {
+            $host = env('HOSTNAME');
 
-			if (empty($host)) {
-				$host = env('HOST');
-			}
+            if (empty($host)) {
+                $host = env('HOST');
+            }
 
-			if (!empty($host)) {
-				$ip = gethostbyname($host);
+            if (!empty($host)) {
+                $ip = gethostbyname($host);
 
-				if ($ip === $host) {
-					$node = crc32($host);
-				} else {
-					$node = ip2long($ip);
-				}
-			}
-		} elseif ($node !== '127.0.0.1') {
-			$node = ip2long($node);
-		} else {
-			$node = null;
-		}
+                if ($ip === $host) {
+                    $node = crc32($host);
+                } else {
+                    $node = ip2long($ip);
+                }
+            }
+        } elseif ($node !== '127.0.0.1') {
+            $node = ip2long($node);
+        } else {
+            $node = null;
+        }
 
 		if (empty($node)) {
 			$node = crc32(Configure::read('Security.salt'));
 		}
 
-		if (function_exists('hphp_get_thread_id')) {
-			$pid = hphp_get_thread_id();
-		} elseif (function_exists('zend_thread_id')) {
-			$pid = zend_thread_id();
-		} else {
-			$pid = getmypid();
-		}
+        if (function_exists('hphp_get_thread_id')) {
+            $pid = hphp_get_thread_id();
+        } elseif (function_exists('zend_thread_id')) {
+            $pid = zend_thread_id();
+        } else {
+            $pid = getmypid();
+        }
 
-		if (!$pid || $pid > 65535) {
-			$pid = mt_rand(0, 0xfff) | 0x4000;
-		}
+        if (!$pid || $pid > 65535) {
+            $pid = mt_rand(0, 0xfff) | 0x4000;
+        }
 
-		list($timeMid, $timeLow) = explode(' ', microtime());
-		return sprintf(
-			"%08x-%04x-%04x-%02x%02x-%04x%08x", (int)$timeLow, (int)substr($timeMid, 2) & 0xffff,
-			mt_rand(0, 0xfff) | 0x4000, mt_rand(0, 0x3f) | 0x80, mt_rand(0, 0xff), $pid, $node
-		);
-	}
+        list($timeMid, $timeLow) = explode(' ', microtime());
+        return sprintf(
+            "%08x-%04x-%04x-%02x%02x-%04x%08x", (int)$timeLow, (int)substr($timeMid, 2) & 0xffff,
+            mt_rand(0, 0xfff) | 0x4000, mt_rand(0, 0x3f) | 0x80, mt_rand(0, 0xff), $pid, $node
+        );
+    }
 
 /**
  * Tokenizes a string using $separator, ignoring any instance of $separator that appears between
@@ -106,71 +106,71 @@ class String {
  * @param string $rightBound The right boundary to ignore separators in.
  * @return mixed Array of tokens in $data or original input if empty.
  */
-	public static function tokenize($data, $separator = ',', $leftBound = '(', $rightBound = ')') {
-		if (empty($data)) {
-			return array();
-		}
+    public static function tokenize($data, $separator = ',', $leftBound = '(', $rightBound = ')') {
+        if (empty($data)) {
+            return array();
+        }
 
-		$depth = 0;
-		$offset = 0;
-		$buffer = '';
-		$results = array();
-		$length = strlen($data);
-		$open = false;
+        $depth = 0;
+        $offset = 0;
+        $buffer = '';
+        $results = array();
+        $length = strlen($data);
+        $open = false;
 
-		while ($offset <= $length) {
-			$tmpOffset = -1;
-			$offsets = array(
-				strpos($data, $separator, $offset),
-				strpos($data, $leftBound, $offset),
-				strpos($data, $rightBound, $offset)
-			);
-			for ($i = 0; $i < 3; $i++) {
-				if ($offsets[$i] !== false && ($offsets[$i] < $tmpOffset || $tmpOffset == -1)) {
-					$tmpOffset = $offsets[$i];
-				}
-			}
-			if ($tmpOffset !== -1) {
-				$buffer .= substr($data, $offset, ($tmpOffset - $offset));
-				if (!$depth && $data{$tmpOffset} === $separator) {
-					$results[] = $buffer;
-					$buffer = '';
-				} else {
-					$buffer .= $data{$tmpOffset};
-				}
-				if ($leftBound !== $rightBound) {
-					if ($data{$tmpOffset} === $leftBound) {
-						$depth++;
-					}
-					if ($data{$tmpOffset} === $rightBound) {
-						$depth--;
-					}
-				} else {
-					if ($data{$tmpOffset} === $leftBound) {
-						if (!$open) {
-							$depth++;
-							$open = true;
-						} else {
-							$depth--;
-						}
-					}
-				}
-				$offset = ++$tmpOffset;
-			} else {
-				$results[] = $buffer . substr($data, $offset);
-				$offset = $length + 1;
-			}
-		}
-		if (empty($results) && !empty($buffer)) {
-			$results[] = $buffer;
-		}
+        while ($offset <= $length) {
+            $tmpOffset = -1;
+            $offsets = array(
+                strpos($data, $separator, $offset),
+                strpos($data, $leftBound, $offset),
+                strpos($data, $rightBound, $offset)
+            );
+            for ($i = 0; $i < 3; $i++) {
+                if ($offsets[$i] !== false && ($offsets[$i] < $tmpOffset || $tmpOffset == -1)) {
+                    $tmpOffset = $offsets[$i];
+                }
+            }
+            if ($tmpOffset !== -1) {
+                $buffer .= substr($data, $offset, ($tmpOffset - $offset));
+                if (!$depth && $data{$tmpOffset} === $separator) {
+                    $results[] = $buffer;
+                    $buffer = '';
+                } else {
+                    $buffer .= $data{$tmpOffset};
+                }
+                if ($leftBound !== $rightBound) {
+                    if ($data{$tmpOffset} === $leftBound) {
+                        $depth++;
+                    }
+                    if ($data{$tmpOffset} === $rightBound) {
+                        $depth--;
+                    }
+                } else {
+                    if ($data{$tmpOffset} === $leftBound) {
+                        if (!$open) {
+                            $depth++;
+                            $open = true;
+                        } else {
+                            $depth--;
+                        }
+                    }
+                }
+                $offset = ++$tmpOffset;
+            } else {
+                $results[] = $buffer . substr($data, $offset);
+                $offset = $length + 1;
+            }
+        }
+        if (empty($results) && !empty($buffer)) {
+            $results[] = $buffer;
+        }
 
-		if (!empty($results)) {
-			return array_map('trim', $results);
-		}
+        if (!empty($results)) {
+            return array_map('trim', $results);
+        }
 
-		return array();
-	}
+        return array();
+    }
 
 /**
  * Replaces variable placeholders inside a $str with any given $data. Each key in the $data array
@@ -193,58 +193,58 @@ class String {
  * @param array $options An array of options, see description above
  * @return string
  */
-	public static function insert($str, $data, $options = array()) {
-		$defaults = array(
-			'before' => ':', 'after' => null, 'escape' => '\\', 'format' => null, 'clean' => false
-		);
-		$options += $defaults;
-		$format = $options['format'];
-		$data = (array)$data;
-		if (empty($data)) {
-			return ($options['clean']) ? String::cleanInsert($str, $options) : $str;
-		}
+    public static function insert($str, $data, $options = array()) {
+        $defaults = array(
+            'before' => ':', 'after' => null, 'escape' => '\\', 'format' => null, 'clean' => false
+        );
+        $options += $defaults;
+        $format = $options['format'];
+        $data = (array)$data;
+        if (empty($data)) {
+            return ($options['clean']) ? String::cleanInsert($str, $options) : $str;
+        }
 
-		if (!isset($format)) {
-			$format = sprintf(
-				'/(?<!%s)%s%%s%s/',
-				preg_quote($options['escape'], '/'),
-				str_replace('%', '%%', preg_quote($options['before'], '/')),
-				str_replace('%', '%%', preg_quote($options['after'], '/'))
-			);
-		}
+        if (!isset($format)) {
+            $format = sprintf(
+                '/(?<!%s)%s%%s%s/',
+                preg_quote($options['escape'], '/'),
+                str_replace('%', '%%', preg_quote($options['before'], '/')),
+                str_replace('%', '%%', preg_quote($options['after'], '/'))
+            );
+        }
 
-		if (strpos($str, '?') !== false && is_numeric(key($data))) {
-			$offset = 0;
-			while (($pos = strpos($str, '?', $offset)) !== false) {
-				$val = array_shift($data);
-				$offset = $pos + strlen($val);
-				$str = substr_replace($str, $val, $pos, 1);
-			}
-			return ($options['clean']) ? String::cleanInsert($str, $options) : $str;
-		}
+        if (strpos($str, '?') !== false && is_numeric(key($data))) {
+            $offset = 0;
+            while (($pos = strpos($str, '?', $offset)) !== false) {
+                $val = array_shift($data);
+                $offset = $pos + strlen($val);
+                $str = substr_replace($str, $val, $pos, 1);
+            }
+            return ($options['clean']) ? String::cleanInsert($str, $options) : $str;
+        }
 
-		asort($data);
+        asort($data);
 
-		$dataKeys = array_keys($data);
-		$hashKeys = array_map('crc32', $dataKeys);
-		$tempData = array_combine($dataKeys, $hashKeys);
-		krsort($tempData);
+        $dataKeys = array_keys($data);
+        $hashKeys = array_map('crc32', $dataKeys);
+        $tempData = array_combine($dataKeys, $hashKeys);
+        krsort($tempData);
 
-		foreach ($tempData as $key => $hashVal) {
-			$key = sprintf($format, preg_quote($key, '/'));
-			$str = preg_replace($key, $hashVal, $str);
-		}
-		$dataReplacements = array_combine($hashKeys, array_values($data));
-		foreach ($dataReplacements as $tmpHash => $tmpValue) {
-			$tmpValue = (is_array($tmpValue)) ? '' : $tmpValue;
-			$str = str_replace($tmpHash, $tmpValue, $str);
-		}
+        foreach ($tempData as $key => $hashVal) {
+            $key = sprintf($format, preg_quote($key, '/'));
+            $str = preg_replace($key, $hashVal, $str);
+        }
+        $dataReplacements = array_combine($hashKeys, array_values($data));
+        foreach ($dataReplacements as $tmpHash => $tmpValue) {
+            $tmpValue = (is_array($tmpValue)) ? '' : $tmpValue;
+            $str = str_replace($tmpHash, $tmpValue, $str);
+        }
 
-		if (!isset($options['format']) && isset($options['before'])) {
-			$str = str_replace($options['escape'] . $options['before'], $options['before'], $str);
-		}
-		return ($options['clean']) ? String::cleanInsert($str, $options) : $str;
-	}
+        if (!isset($options['format']) && isset($options['before'])) {
+            $str = str_replace($options['escape'] . $options['before'], $options['before'], $str);
+        }
+        return ($options['clean']) ? String::cleanInsert($str, $options) : $str;
+    }
 
 /**
  * Cleans up a String::insert() formatted string with given $options depending on the 'clean' key in
@@ -257,59 +257,59 @@ class String {
  * @return string
  * @see String::insert()
  */
-	public static function cleanInsert($str, $options) {
-		$clean = $options['clean'];
-		if (!$clean) {
-			return $str;
-		}
-		if ($clean === true) {
-			$clean = array('method' => 'text');
-		}
-		if (!is_array($clean)) {
-			$clean = array('method' => $options['clean']);
-		}
-		switch ($clean['method']) {
-			case 'html':
-				$clean = array_merge(array(
-					'word' => '[\w,.]+',
-					'andText' => true,
-					'replacement' => '',
-				), $clean);
-				$kleenex = sprintf(
-					'/[\s]*[a-z]+=(")(%s%s%s[\s]*)+\\1/i',
-					preg_quote($options['before'], '/'),
-					$clean['word'],
-					preg_quote($options['after'], '/')
-				);
-				$str = preg_replace($kleenex, $clean['replacement'], $str);
-				if ($clean['andText']) {
-					$options['clean'] = array('method' => 'text');
-					$str = String::cleanInsert($str, $options);
-				}
-				break;
-			case 'text':
-				$clean = array_merge(array(
-					'word' => '[\w,.]+',
-					'gap' => '[\s]*(?:(?:and|or)[\s]*)?',
-					'replacement' => '',
-				), $clean);
+    public static function cleanInsert($str, $options) {
+        $clean = $options['clean'];
+        if (!$clean) {
+            return $str;
+        }
+        if ($clean === true) {
+            $clean = array('method' => 'text');
+        }
+        if (!is_array($clean)) {
+            $clean = array('method' => $options['clean']);
+        }
+        switch ($clean['method']) {
+            case 'html':
+                $clean = array_merge(array(
+                    'word' => '[\w,.]+',
+                    'andText' => true,
+                    'replacement' => '',
+                ), $clean);
+                $kleenex = sprintf(
+                    '/[\s]*[a-z]+=(")(%s%s%s[\s]*)+\\1/i',
+                    preg_quote($options['before'], '/'),
+                    $clean['word'],
+                    preg_quote($options['after'], '/')
+                );
+                $str = preg_replace($kleenex, $clean['replacement'], $str);
+                if ($clean['andText']) {
+                    $options['clean'] = array('method' => 'text');
+                    $str = String::cleanInsert($str, $options);
+                }
+                break;
+            case 'text':
+                $clean = array_merge(array(
+                    'word' => '[\w,.]+',
+                    'gap' => '[\s]*(?:(?:and|or)[\s]*)?',
+                    'replacement' => '',
+                ), $clean);
 
-				$kleenex = sprintf(
-					'/(%s%s%s%s|%s%s%s%s)/',
-					preg_quote($options['before'], '/'),
-					$clean['word'],
-					preg_quote($options['after'], '/'),
-					$clean['gap'],
-					$clean['gap'],
-					preg_quote($options['before'], '/'),
-					$clean['word'],
-					preg_quote($options['after'], '/')
-				);
-				$str = preg_replace($kleenex, $clean['replacement'], $str);
-				break;
-		}
-		return $str;
-	}
+                $kleenex = sprintf(
+                    '/(%s%s%s%s|%s%s%s%s)/',
+                    preg_quote($options['before'], '/'),
+                    $clean['word'],
+                    preg_quote($options['after'], '/'),
+                    $clean['gap'],
+                    $clean['gap'],
+                    preg_quote($options['before'], '/'),
+                    $clean['word'],
+                    preg_quote($options['after'], '/')
+                );
+                $str = preg_replace($kleenex, $clean['replacement'], $str);
+                break;
+        }
+        return $str;
+    }
 
 /**
  * Wraps text to a specific width, can optionally wrap at word breaks.
@@ -325,25 +325,25 @@ class String {
  * @param array|int $options Array of options to use, or an integer to wrap the text to.
  * @return string Formatted text.
  */
-	public static function wrap($text, $options = array()) {
-		if (is_numeric($options)) {
-			$options = array('width' => $options);
-		}
-		$options += array('width' => 72, 'wordWrap' => true, 'indent' => null, 'indentAt' => 0);
-		if ($options['wordWrap']) {
-			$wrapped = self::wordWrap($text, $options['width'], "\n");
-		} else {
-			$wrapped = trim(chunk_split($text, $options['width'] - 1, "\n"));
-		}
-		if (!empty($options['indent'])) {
-			$chunks = explode("\n", $wrapped);
-			for ($i = $options['indentAt'], $len = count($chunks); $i < $len; $i++) {
-				$chunks[$i] = $options['indent'] . $chunks[$i];
-			}
-			$wrapped = implode("\n", $chunks);
-		}
-		return $wrapped;
-	}
+    public static function wrap($text, $options = array()) {
+        if (is_numeric($options)) {
+            $options = array('width' => $options);
+        }
+        $options += array('width' => 72, 'wordWrap' => true, 'indent' => null, 'indentAt' => 0);
+        if ($options['wordWrap']) {
+            $wrapped = self::wordWrap($text, $options['width'], "\n");
+        } else {
+            $wrapped = trim(chunk_split($text, $options['width'] - 1, "\n"));
+        }
+        if (!empty($options['indent'])) {
+            $chunks = explode("\n", $wrapped);
+            for ($i = $options['indentAt'], $len = count($chunks); $i < $len; $i++) {
+                $chunks[$i] = $options['indent'] . $chunks[$i];
+            }
+            $wrapped = implode("\n", $chunks);
+        }
+        return $wrapped;
+    }
 
 /**
  * Unicode aware version of wordwrap.
@@ -354,45 +354,45 @@ class String {
  * @param bool $cut If the cut is set to true, the string is always wrapped at the specified width.
  * @return string Formatted text.
  */
-	public static function wordWrap($text, $width = 72, $break = "\n", $cut = false) {
-		if ($cut) {
-			$parts = array();
-			while (mb_strlen($text) > 0) {
-				$part = mb_substr($text, 0, $width);
-				$parts[] = trim($part);
-				$text = trim(mb_substr($text, mb_strlen($part)));
-			}
-			return implode($break, $parts);
-		}
+    public static function wordWrap($text, $width = 72, $break = "\n", $cut = false) {
+        if ($cut) {
+            $parts = array();
+            while (mb_strlen($text) > 0) {
+                $part = mb_substr($text, 0, $width);
+                $parts[] = trim($part);
+                $text = trim(mb_substr($text, mb_strlen($part)));
+            }
+            return implode($break, $parts);
+        }
 
-		$parts = array();
-		while (mb_strlen($text) > 0) {
-			if ($width >= mb_strlen($text)) {
-				$parts[] = trim($text);
-				break;
-			}
+        $parts = array();
+        while (mb_strlen($text) > 0) {
+            if ($width >= mb_strlen($text)) {
+                $parts[] = trim($text);
+                break;
+            }
 
-			$part = mb_substr($text, 0, $width);
-			$nextChar = mb_substr($text, $width, 1);
-			if ($nextChar !== ' ') {
-				$breakAt = mb_strrpos($part, ' ');
-				if ($breakAt === false) {
-					$breakAt = mb_strpos($text, ' ', $width);
-				}
-				if ($breakAt === false) {
-					$parts[] = trim($text);
-					break;
-				}
-				$part = mb_substr($text, 0, $breakAt);
-			}
+            $part = mb_substr($text, 0, $width);
+            $nextChar = mb_substr($text, $width, 1);
+            if ($nextChar !== ' ') {
+                $breakAt = mb_strrpos($part, ' ');
+                if ($breakAt === false) {
+                    $breakAt = mb_strpos($text, ' ', $width);
+                }
+                if ($breakAt === false) {
+                    $parts[] = trim($text);
+                    break;
+                }
+                $part = mb_substr($text, 0, $breakAt);
+            }
 
-			$part = trim($part);
-			$parts[] = $part;
-			$text = trim(mb_substr($text, mb_strlen($part)));
-		}
+            $part = trim($part);
+            $parts[] = $part;
+            $text = trim(mb_substr($text, mb_strlen($part)));
+        }
 
-		return implode($break, $parts);
-	}
+        return implode($break, $parts);
+    }
 
 /**
  * Highlights a given phrase in a text. You can specify any expression in highlighter that
@@ -410,43 +410,43 @@ class String {
  * @return string The highlighted text
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/text.html#TextHelper::highlight
  */
-	public static function highlight($text, $phrase, $options = array()) {
-		if (empty($phrase)) {
-			return $text;
-		}
+    public static function highlight($text, $phrase, $options = array()) {
+        if (empty($phrase)) {
+            return $text;
+        }
 
-		$defaults = array(
-			'format' => '<span class="highlight">\1</span>',
-			'html' => false,
-			'regex' => "|%s|iu"
-		);
-		$options += $defaults;
-		extract($options);
+        $defaults = array(
+            'format' => '<span class="highlight">\1</span>',
+            'html' => false,
+            'regex' => "|%s|iu"
+        );
+        $options += $defaults;
+        extract($options);
 
-		if (is_array($phrase)) {
-			$replace = array();
-			$with = array();
+        if (is_array($phrase)) {
+            $replace = array();
+            $with = array();
 
-			foreach ($phrase as $key => $segment) {
-				$segment = '(' . preg_quote($segment, '|') . ')';
-				if ($html) {
-					$segment = "(?![^<]+>)$segment(?![^<]+>)";
-				}
+            foreach ($phrase as $key => $segment) {
+                $segment = '(' . preg_quote($segment, '|') . ')';
+                if ($html) {
+                    $segment = "(?![^<]+>)$segment(?![^<]+>)";
+                }
 
-				$with[] = (is_array($format)) ? $format[$key] : $format;
-				$replace[] = sprintf($options['regex'], $segment);
-			}
+                $with[] = (is_array($format)) ? $format[$key] : $format;
+                $replace[] = sprintf($options['regex'], $segment);
+            }
 
-			return preg_replace($replace, $with, $text);
-		}
+            return preg_replace($replace, $with, $text);
+        }
 
-		$phrase = '(' . preg_quote($phrase, '|') . ')';
-		if ($html) {
-			$phrase = "(?![^<]+>)$phrase(?![^<]+>)";
-		}
+        $phrase = '(' . preg_quote($phrase, '|') . ')';
+        if ($html) {
+            $phrase = "(?![^<]+>)$phrase(?![^<]+>)";
+        }
 
-		return preg_replace(sprintf($options['regex'], $phrase), $format, $text);
-	}
+        return preg_replace(sprintf($options['regex'], $phrase), $format, $text);
+    }
 
 /**
  * Strips given text of all links (<a href=....).
@@ -455,9 +455,9 @@ class String {
  * @return string The text without links
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/text.html#TextHelper::stripLinks
  */
-	public static function stripLinks($text) {
-		return preg_replace('|<a\s+[^>]+>|im', '', preg_replace('|<\/a>|im', '', $text));
-	}
+    public static function stripLinks($text) {
+        return preg_replace('|<a\s+[^>]+>|im', '', preg_replace('|<\/a>|im', '', $text));
+    }
 
 /**
  * Truncates text starting from the end.
@@ -475,29 +475,29 @@ class String {
  * @param array $options An array of options.
  * @return string Trimmed string.
  */
-	public static function tail($text, $length = 100, $options = array()) {
-		$defaults = array(
-			'ellipsis' => '...', 'exact' => true
-		);
-		$options += $defaults;
-		extract($options);
+    public static function tail($text, $length = 100, $options = array()) {
+        $defaults = array(
+            'ellipsis' => '...', 'exact' => true
+        );
+        $options += $defaults;
+        extract($options);
 
-		if (!function_exists('mb_strlen')) {
-			class_exists('Multibyte');
-		}
+        if (!function_exists('mb_strlen')) {
+            class_exists('Multibyte');
+        }
 
-		if (mb_strlen($text) <= $length) {
-			return $text;
-		}
+        if (mb_strlen($text) <= $length) {
+            return $text;
+        }
 
-		$truncate = mb_substr($text, mb_strlen($text) - $length + mb_strlen($ellipsis));
-		if (!$exact) {
-			$spacepos = mb_strpos($truncate, ' ');
-			$truncate = $spacepos === false ? '' : trim(mb_substr($truncate, $spacepos));
-		}
+        $truncate = mb_substr($text, mb_strlen($text) - $length + mb_strlen($ellipsis));
+        if (!$exact) {
+            $spacepos = mb_strpos($truncate, ' ');
+            $truncate = $spacepos === false ? '' : trim(mb_substr($truncate, $spacepos));
+        }
 
-		return $ellipsis . $truncate;
-	}
+        return $ellipsis . $truncate;
+    }
 
 /**
  * Truncates text.
@@ -517,114 +517,114 @@ class String {
  * @return string Trimmed string.
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/text.html#TextHelper::truncate
  */
-	public static function truncate($text, $length = 100, $options = array()) {
-		$defaults = array(
-			'ellipsis' => '...', 'exact' => true, 'html' => false
-		);
-		if (isset($options['ending'])) {
-			$defaults['ellipsis'] = $options['ending'];
-		} elseif (!empty($options['html']) && Configure::read('App.encoding') === 'UTF-8') {
-			$defaults['ellipsis'] = "\xe2\x80\xa6";
-		}
-		$options += $defaults;
-		extract($options);
+    public static function truncate($text, $length = 100, $options = array()) {
+        $defaults = array(
+            'ellipsis' => '...', 'exact' => true, 'html' => false
+        );
+        if (isset($options['ending'])) {
+            $defaults['ellipsis'] = $options['ending'];
+        } elseif (!empty($options['html']) ) {
+            $defaults['ellipsis'] = "\xe2\x80\xa6";
+        }
+        $options += $defaults;
+        extract($options);
 
-		if (!function_exists('mb_strlen')) {
-			class_exists('Multibyte');
-		}
+        if (!function_exists('mb_strlen')) {
+            class_exists('Multibyte');
+        }
 
-		if ($html) {
-			if (mb_strlen(preg_replace('/<.*?>/', '', $text)) <= $length) {
-				return $text;
-			}
-			$totalLength = mb_strlen(strip_tags($ellipsis));
-			$openTags = array();
-			$truncate = '';
+        if ($html) {
+            if (mb_strlen(preg_replace('/<.*?>/', '', $text)) <= $length) {
+                return $text;
+            }
+            $totalLength = mb_strlen(strip_tags($ellipsis));
+            $openTags = array();
+            $truncate = '';
 
-			preg_match_all('/(<\/?([\w+]+)[^>]*>)?([^<>]*)/', $text, $tags, PREG_SET_ORDER);
-			foreach ($tags as $tag) {
-				if (!preg_match('/img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param/s', $tag[2])) {
-					if (preg_match('/<[\w]+[^>]*>/s', $tag[0])) {
-						array_unshift($openTags, $tag[2]);
-					} elseif (preg_match('/<\/([\w]+)[^>]*>/s', $tag[0], $closeTag)) {
-						$pos = array_search($closeTag[1], $openTags);
-						if ($pos !== false) {
-							array_splice($openTags, $pos, 1);
-						}
-					}
-				}
-				$truncate .= $tag[1];
+            preg_match_all('/(<\/?([\w+]+)[^>]*>)?([^<>]*)/', $text, $tags, PREG_SET_ORDER);
+            foreach ($tags as $tag) {
+                if (!preg_match('/img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param/s', $tag[2])) {
+                    if (preg_match('/<[\w]+[^>]*>/s', $tag[0])) {
+                        array_unshift($openTags, $tag[2]);
+                    } elseif (preg_match('/<\/([\w]+)[^>]*>/s', $tag[0], $closeTag)) {
+                        $pos = array_search($closeTag[1], $openTags);
+                        if ($pos !== false) {
+                            array_splice($openTags, $pos, 1);
+                        }
+                    }
+                }
+                $truncate .= $tag[1];
 
-				$contentLength = mb_strlen(preg_replace('/&[0-9a-z]{2,8};|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};/i', ' ', $tag[3]));
-				if ($contentLength + $totalLength > $length) {
-					$left = $length - $totalLength;
-					$entitiesLength = 0;
-					if (preg_match_all('/&[0-9a-z]{2,8};|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};/i', $tag[3], $entities, PREG_OFFSET_CAPTURE)) {
-						foreach ($entities[0] as $entity) {
-							if ($entity[1] + 1 - $entitiesLength <= $left) {
-								$left--;
-								$entitiesLength += mb_strlen($entity[0]);
-							} else {
-								break;
-							}
-						}
-					}
+                $contentLength = mb_strlen(preg_replace('/&[0-9a-z]{2,8};|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};/i', ' ', $tag[3]));
+                if ($contentLength + $totalLength > $length) {
+                    $left = $length - $totalLength;
+                    $entitiesLength = 0;
+                    if (preg_match_all('/&[0-9a-z]{2,8};|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};/i', $tag[3], $entities, PREG_OFFSET_CAPTURE)) {
+                        foreach ($entities[0] as $entity) {
+                            if ($entity[1] + 1 - $entitiesLength <= $left) {
+                                $left--;
+                                $entitiesLength += mb_strlen($entity[0]);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
 
-					$truncate .= mb_substr($tag[3], 0, $left + $entitiesLength);
-					break;
-				} else {
-					$truncate .= $tag[3];
-					$totalLength += $contentLength;
-				}
-				if ($totalLength >= $length) {
-					break;
-				}
-			}
-		} else {
-			if (mb_strlen($text) <= $length) {
-				return $text;
-			}
-			$truncate = mb_substr($text, 0, $length - mb_strlen($ellipsis));
-		}
-		if (!$exact) {
-			$spacepos = mb_strrpos($truncate, ' ');
-			if ($html) {
-				$truncateCheck = mb_substr($truncate, 0, $spacepos);
-				$lastOpenTag = mb_strrpos($truncateCheck, '<');
-				$lastCloseTag = mb_strrpos($truncateCheck, '>');
-				if ($lastOpenTag > $lastCloseTag) {
-					preg_match_all('/<[\w]+[^>]*>/s', $truncate, $lastTagMatches);
-					$lastTag = array_pop($lastTagMatches[0]);
-					$spacepos = mb_strrpos($truncate, $lastTag) + mb_strlen($lastTag);
-				}
-				$bits = mb_substr($truncate, $spacepos);
-				preg_match_all('/<\/([a-z]+)>/', $bits, $droppedTags, PREG_SET_ORDER);
-				if (!empty($droppedTags)) {
-					if (!empty($openTags)) {
-						foreach ($droppedTags as $closingTag) {
-							if (!in_array($closingTag[1], $openTags)) {
-								array_unshift($openTags, $closingTag[1]);
-							}
-						}
-					} else {
-						foreach ($droppedTags as $closingTag) {
-							$openTags[] = $closingTag[1];
-						}
-					}
-				}
-			}
-			$truncate = mb_substr($truncate, 0, $spacepos);
-		}
-		$truncate .= $ellipsis;
+                    $truncate .= mb_substr($tag[3], 0, $left + $entitiesLength);
+                    break;
+                } else {
+                    $truncate .= $tag[3];
+                    $totalLength += $contentLength;
+                }
+                if ($totalLength >= $length) {
+                    break;
+                }
+            }
+        } else {
+            if (mb_strlen($text) <= $length) {
+                return $text;
+            }
+            $truncate = mb_substr($text, 0, $length - mb_strlen($ellipsis));
+        }
+        if (!$exact) {
+            $spacepos = mb_strrpos($truncate, ' ');
+            if ($html) {
+                $truncateCheck = mb_substr($truncate, 0, $spacepos);
+                $lastOpenTag = mb_strrpos($truncateCheck, '<');
+                $lastCloseTag = mb_strrpos($truncateCheck, '>');
+                if ($lastOpenTag > $lastCloseTag) {
+                    preg_match_all('/<[\w]+[^>]*>/s', $truncate, $lastTagMatches);
+                    $lastTag = array_pop($lastTagMatches[0]);
+                    $spacepos = mb_strrpos($truncate, $lastTag) + mb_strlen($lastTag);
+                }
+                $bits = mb_substr($truncate, $spacepos);
+                preg_match_all('/<\/([a-z]+)>/', $bits, $droppedTags, PREG_SET_ORDER);
+                if (!empty($droppedTags)) {
+                    if (!empty($openTags)) {
+                        foreach ($droppedTags as $closingTag) {
+                            if (!in_array($closingTag[1], $openTags)) {
+                                array_unshift($openTags, $closingTag[1]);
+                            }
+                        }
+                    } else {
+                        foreach ($droppedTags as $closingTag) {
+                            $openTags[] = $closingTag[1];
+                        }
+                    }
+                }
+            }
+            $truncate = mb_substr($truncate, 0, $spacepos);
+        }
+        $truncate .= $ellipsis;
 
-		if ($html) {
-			foreach ($openTags as $tag) {
-				$truncate .= '</' . $tag . '>';
-			}
-		}
+        if ($html) {
+            foreach ($openTags as $tag) {
+                $truncate .= '</' . $tag . '>';
+            }
+        }
 
-		return $truncate;
-	}
+        return $truncate;
+    }
 
 /**
  * Extracts an excerpt from the text surrounding the phrase with a number of characters on each side
@@ -637,38 +637,38 @@ class String {
  * @return string Modified string
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/text.html#TextHelper::excerpt
  */
-	public static function excerpt($text, $phrase, $radius = 100, $ellipsis = '...') {
-		if (empty($text) || empty($phrase)) {
-			return self::truncate($text, $radius * 2, array('ellipsis' => $ellipsis));
-		}
+    public static function excerpt($text, $phrase, $radius = 100, $ellipsis = '...') {
+        if (empty($text) || empty($phrase)) {
+            return self::truncate($text, $radius * 2, array('ellipsis' => $ellipsis));
+        }
 
-		$append = $prepend = $ellipsis;
+        $append = $prepend = $ellipsis;
 
-		$phraseLen = mb_strlen($phrase);
-		$textLen = mb_strlen($text);
+        $phraseLen = mb_strlen($phrase);
+        $textLen = mb_strlen($text);
 
-		$pos = mb_strpos(mb_strtolower($text), mb_strtolower($phrase));
-		if ($pos === false) {
-			return mb_substr($text, 0, $radius) . $ellipsis;
-		}
+        $pos = mb_strpos(mb_strtolower($text), mb_strtolower($phrase));
+        if ($pos === false) {
+            return mb_substr($text, 0, $radius) . $ellipsis;
+        }
 
-		$startPos = $pos - $radius;
-		if ($startPos <= 0) {
-			$startPos = 0;
-			$prepend = '';
-		}
+        $startPos = $pos - $radius;
+        if ($startPos <= 0) {
+            $startPos = 0;
+            $prepend = '';
+        }
 
-		$endPos = $pos + $phraseLen + $radius;
-		if ($endPos >= $textLen) {
-			$endPos = $textLen;
-			$append = '';
-		}
+        $endPos = $pos + $phraseLen + $radius;
+        if ($endPos >= $textLen) {
+            $endPos = $textLen;
+            $append = '';
+        }
 
-		$excerpt = mb_substr($text, $startPos, $endPos - $startPos);
-		$excerpt = $prepend . $excerpt . $append;
+        $excerpt = mb_substr($text, $startPos, $endPos - $startPos);
+        $excerpt = $prepend . $excerpt . $append;
 
-		return $excerpt;
-	}
+        return $excerpt;
+    }
 
 /**
  * Creates a comma separated list where the last two items are joined with 'and', forming natural English
@@ -679,11 +679,11 @@ class String {
  * @return string The glued together string.
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/text.html#TextHelper::toList
  */
-	public static function toList($list, $and = 'and', $separator = ', ') {
-		if (count($list) > 1) {
-			return implode($separator, array_slice($list, null, -1)) . ' ' . $and . ' ' . array_pop($list);
-		}
+    public static function toList($list, $and = 'and', $separator = ', ') {
+        if (count($list) > 1) {
+            return implode($separator, array_slice($list, null, -1)) . ' ' . $and . ' ' . array_pop($list);
+        }
 
-		return array_pop($list);
-	}
+        return array_pop($list);
+    }
 }

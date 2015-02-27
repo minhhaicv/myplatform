@@ -181,6 +181,18 @@ class Request {
         return $_SERVER['REQUEST_SCHEME'] . '://'.$_SERVER['SERVER_NAME'];
     }
 
+    public function branchUrl() {
+        if (empty($this->prefix)) {
+            return self::baseUrl();
+        }
+
+        return self::baseUrl() . '/' . $this->prefix;
+    }
+
+    public function getLocale() {
+        return $this->locale;
+    }
+
     public function conduct() {
         global $request;
 
@@ -211,22 +223,31 @@ class Request {
     }
 
     private function __formatGet($input) {
-        $prefix = $channel = '';
+        $prefix = $channel = $locale = '';
         $query  = $name = $param = array();
+
+        $locales = Helper::config()->get('locale.available');
 
         $request = $input['request'];
 
-        $prefixList = Helper::config()->prefix;
+        $prefixes = Helper::config()->prefix;
 
         foreach ($input as $key => $value) {
             if ($key == 'request') {
                 $value = trim($value, '/');
 
-                if (strpos(trim($value, '/'), '/') !== false) {
+                if (strpos($value, '/') !== false) {
                     $query = array_merge($query, explode('/', $value));
 
+                    if (in_array($query[0], $locales)) {
+                        $locale = $query[0];
+                        unset($query[0]);
+
+                        $query = array_values($query);
+                    }
+
                     foreach ($query as $k => $v) {
-                        if (in_array($v, $prefixList)) {
+                        if (in_array($v, $prefixes)) {
                             $prefix = $v;
                             unset($query[$k]);
 
@@ -241,15 +262,13 @@ class Request {
                             }
                         }
                     }
-
-                    continue;
                 } else {
-                    if (in_array($value, $prefixList)) {
+                    if (in_array($value, $locales)) {
+                        $locale = $value;
+                    } elseif (in_array($value, $prefixes)) {
                         $prefix = $value;
                     }
                 }
-
-                $query[] = $value;
             }
 
             if (strpos($key, ':') !== false) {
@@ -265,8 +284,11 @@ class Request {
 
         $query = array_values($query);
 
-        $query['module'] = $query[0];
-        $query['action'] = '';
+        $query['action'] = $query['module'] = '';
+
+        if (empty($query[0]) === false && strpos($query[0], ':') === false) {
+            $query['module'] = $query[0];
+        }
 
         if (empty($query[1]) === false && strpos($query[1], ':') === false) {
             $query['action'] = $query[1];
@@ -274,7 +296,11 @@ class Request {
 
         $channel = empty($prefix) ? 'blank' : $prefix;
 
-        return compact('request', 'query', 'name', 'param', 'prefix', 'channel');
+        if (empty($locale)) {
+            $locale = Helper::config()->get('locale.default');
+        }
+
+        return compact('request', 'query', 'name', 'param', 'prefix', 'channel', 'locale');
     }
 
     private function __alternate(&$input = array()) {

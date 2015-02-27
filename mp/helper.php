@@ -30,43 +30,11 @@ class Helper {
     }
 
     static function template() {
-        global $template, $request;
+        global $template;
 
         if (is_null($template)) {
-            $folder = self::config()->view[$request->channel];
-
-            self::attach(LIB."parse-engine".DS."Twig".DS."Autoloader.php", false);
-            Twig_Autoloader::register();
-
-            $loader = new Twig_Loader_Filesystem("./view/{$folder}".DS);
-
-            $template = new Twig_Environment($loader, array(
-                                'cache' => TMP . "cache/view/{$folder}",
-                                'debug' => true,
-                                'strict_variables' => true,
-                                'autoescape' => false,
-                                'auto_reload' => true
-                        ));
-
-
-            $function = new Twig_SimpleFunction("get", function ($name, $type) {
-                return Helper::get($name, $type);
-            });
-            $template->addFunction($function);
-
-            $filter = new Twig_SimpleFilter('link', function ($string) {
-                if (strpos($string, 'http://') === 0 ||
-                    strpos($string, 'https://') === 0 ||
-                    strpos($string, 'www') === 0 ) {
-                    return $string;
-                }
-
-                $string = Helper::get('request', 'lib', true)->baseUrl() . '/' . ltrim($string, '/');
-                return $string;
-            });
-            $template->addFilter($filter);
-
-            $template->addExtension(new Twig_Extension_Debug());
+            Helper::attach(LIB."parse-engine".DS."init.php", false);
+            $template = initTemplate::twig();
         }
 
         return $template;
@@ -88,7 +56,7 @@ class Helper {
         global $$name;
 
         if (is_null($$name)) {
-            $$name = self::load($name, 'lib');
+            $$name = self::load($name, $type);
         }
 
         return $$name;

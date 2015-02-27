@@ -27,6 +27,7 @@ try {
     Helper::scaffold(array("controller", "model", "entity"));
     $request->conduct();
 
+    Helper::get('locale', 'entity', true);
     if (Helper::get('security')->authenticate() === false) {
         throw new UnauthorizedException();
     }

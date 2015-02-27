@@ -78,17 +78,17 @@ class postBackend extends backend {
         $id = intval($id);
         $option = array();
 
-        if (!empty($request->data[$this->model->getAlias()])) {
+        $alias = $this->model->getAlias();
+        if (!empty($request->data[$alias])) {
             if (empty($request->data['file']) == false) {
                 reset($request->data['file']);
 
-                $request->data[$this->model->getAlias()]['file_id'] = current($request->data['file']);
+                $request->data[$alias]['file_id'] = current($request->data['file']);
             }
 
             $this->_save($request->data);
         }
 
-        $alias = $this->model->getAlias();
         $fields =  "{$alias}.id, {$alias}.title, {$alias}.category_id, {$alias}.index, {$alias}.intro, {$alias}.content, {$alias}.status, {$alias}.seo_id";
 
         $target = $this->model->findById($id, $fields);

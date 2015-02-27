@@ -5,7 +5,7 @@ class urlHelper {
     public function get($params = array()) {
         global $request;
 
-        $url = $request->baseUrl() . '/' . $request->prefix;
+        $url = $request->branchUrl();
 
         foreach ($request->query as $k => $v) {
             if ($k === 'action' || $k === 'module') {
@@ -38,17 +38,12 @@ class urlHelper {
     public function generate($url = 'list') {
         global $request;
 
-        return $request->baseUrl() . '/' . $request->prefix . '/' . $request->query['module'] . '/' . $url;
+        return $request->branchUrl() . '/' . $request->query['module'] . '/' . $url;
     }
 
     public function extend($url = '') {
         global $request;
 
-        $return = $request->baseUrl() . '/';
-        if (empty($request->prefix) == false) {
-            $return .= $request->prefix . '/';
-        }
-
-        return $return . $url;
+        return $request->branchUrl() . '/' . $url;
     }
 }

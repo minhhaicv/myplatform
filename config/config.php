@@ -12,7 +12,20 @@ class config {
     public $setting = array(
                         'debug'     => 2,
 
-                        'locale'   => 'en',
+                        'locale'   => array(
+                                        'default'   => 'vi',
+                                        'available' => array('vi', 'en'),
+                                        'scope'     => array(
+                                                        'others'    => 0,
+                                                        'global'    => 1,
+                                                        'category'  => 2,
+                                                        'file'      => 3,
+                                                        'menu'      => 4,
+                                                        'post'      => 5,
+                                                        'seo'       => 6,
+                                                        'user'      => 7,
+                                        )
+                                    ),
 
                         'security' => array(
                                             'salt' => 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi',
@@ -33,14 +46,13 @@ class config {
                                         'max_size' => 5,
                                         'directory' => array(
                                                         'post' => 'bai-viet',
-                                                        'file' => 'bai-viet'
                                         ),
 
                         ),
 
                         'url'   => array(
                                         'media'     => 'http://mp.me/media',
-                                        'cdn'       => 'http://www.mp.me/cdn',
+                                        'cdn'       => 'http://mp.me/cdn',
                         ),
 
                         'website' => array(
