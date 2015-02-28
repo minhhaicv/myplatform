@@ -73,7 +73,7 @@ class model{
     }
 
     public function delete($condition = '') {
-        $userId = Session::read('auth.user.id');
+        $userId = Helper::login()->userId();
 
         $option = array(
                         'fields' => array('modified' => 'NOW()', 'editor' => $userId, 'deleted' => 1),
@@ -83,34 +83,64 @@ class model{
         return $this->update($option);
     }
 
-    public function save($data) {
-        $userId = Session::read('auth.user.id');
+    public function save($data, &$result = array()) {
+        if (Hash::dimensions($data) > 1) {
+            $result = $this->saveMany($data);
 
-        if (empty($data[$this->primaryKey])) {
-            $default = array(
-                            'modified' => 'NOW()',
-                            'editor'   => $userId,
-                            'created'  => 'NOW()',
-                            'creator'  => $userId,
-                            'deleted'  => 0
-            );
-            $data = array_merge($default, $data);
+            if (empty($result['update'])) {
+                return $result['insert'];
+            }
 
-            return $this->create($data);
+            return $result['insert'] && !(in_array(false, $result['update']));
         }
 
+        return $this->__save($data);
+    }
+
+    public function saveMany($data) {
+        $userId = Helper::login()->userId();
+
+        $insert = $update = array();
         $default = array(
                         'modified' => 'NOW()',
                         'editor'   => $userId,
+                        'created'  => 'NOW()',
+                        'creator'  => $userId,
                         'deleted'  => 0
         );
-        $data = array_merge($default, $data);
-        $option = array(
-                        'fields' => $data,
-                        'where' => $this->primaryKey . " = ".$data[$this->primaryKey]
-        );
+        foreach($data as $key => $item) {
+            if (empty($item[$this->primaryKey])) {
+                $insert[] = array_merge($default, $item);
+                continue;
+            }
 
-        return $this->update($option);
+            $update[] = $item;
+        }
+
+        $result = array();
+        if (empty($insert) == false) {
+            $result['insert'] = $this->create($insert, false);
+        }
+
+        if (empty($update) == false) {
+            $default = array(
+                            'modified' => 'NOW()',
+                            'editor'   => $userId,
+                            'deleted'  => 0
+            );
+
+            foreach ($update as $item) {
+                $id = $item[$this->primaryKey];
+                $option = array(
+                                'fields' => array_merge($default, $item),
+                                'where' => $this->primaryKey . " = ".$id
+                );
+
+                $result['update'][$id] = $this->update($option);
+            }
+        }
+
+        return $result;
     }
 
     public function init($fields = array()) {
@@ -129,6 +159,36 @@ class model{
     }
 
 ///////////////////////////////////////////////////////////////
+    private function __save($data) {
+        $userId = Helper::login()->userId();
+
+        if (empty($data[$this->primaryKey])) {
+            $default = array(
+                            'modified' => 'NOW()',
+                            'editor'   => $userId,
+                            'created'  => 'NOW()',
+                            'creator'  => $userId,
+                            'deleted'  => 0
+            );
+            $data = array(array_merge($default, $data));
+
+            return $this->create($data);
+        }
+
+        $default = array(
+                        'modified' => 'NOW()',
+                        'editor'   => $userId,
+                        'deleted'  => 0
+        );
+        $data = array_merge($default, $data);
+        $option = array(
+                        'fields' => $data,
+                        'where' => $this->primaryKey . " = ".$data[$this->primaryKey]
+        );
+
+        return $this->update($option);
+    }
+
     private function __retrieve($option = array()){
         $option['from'] = array($this->table => $this->alias);
         $query = Helper::db()->buildQuery($option);
@@ -156,7 +216,7 @@ class model{
         return Helper::db()->query($query);
     }
 
-    public function create($data = array()) {
+    public function create($data = array(), $single = true) {
         $option = array(
                       'from'   => $this->table,
                       'fields' => $data

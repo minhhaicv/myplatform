@@ -229,25 +229,29 @@ class Mysql extends Sql{
 
         $from = $this->config['prefix'].$query['from'];
 
-        $data = $query['fields'];
-        $tmp = array_keys($data);
-
+        $index  = 0;
         $fields = '';
-        foreach($tmp as $key) {
-            if (in_array($key, $dbFields)) {
-                $fields .= "`{$key}`,";
-            } else {
-                unset($data[$key]);
+        $value  = $ignore = array();
+
+        foreach ($query['fields'] as $record) {
+            if ($index++ == 0) {
+                $tmp = array_keys($record);
+                foreach($tmp as $key) {
+                    if (in_array($key, $dbFields)) {
+                        $fields .= "`{$key}`,";
+                    } else {
+                        $ignore[] = $key;
+                    }
+                }
+
+                $fields = trim($fields, ',');
             }
-        }
 
-        $fields = trim($fields, ',');
-
-        $list = array($data);
-
-        $value = array();
-        foreach($list as $record) {
             foreach($record as $key => $field) {
+                if (in_array($key, $ignore)) {
+                    continue;
+                }
+
                 $record[$key] = $this->__format($field);
             }
 
@@ -268,29 +272,20 @@ class Mysql extends Sql{
     }
 
     public function create($option) {
-        $index = 1; $max = 10;
-
         extract($option);
 
-        $count = count($value);
+        $main = "INSERT INTO {$from} ({$fields}) VALUES ";
 
-        $query = $main = "INSERT INTO {$from} ({$fields}) VALUES ";
+        $run = array_chunk($value, 10, true);
 
-        foreach( $value as $record ){
-            if($index == $max) {
-                $index = 0;
-
-                $query .= $main."(".$record.");";
-                continue;
+        $query = '';
+        foreach ($run as $value) {
+            $query .= $main;
+            foreach ($value as $record) {
+                $query .= "(".$record."),";
             }
 
-            if($index == $count) {
-                $query .= "(".$record.");";
-                continue;
-            }
-
-            $index++;
-            $query .= "(".$record."),";
+            $query = rtrim($query, ',') . ';';
         }
 
         return $query;
