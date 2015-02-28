@@ -4,12 +4,17 @@ class fileBackend extends backend {
 
     public function __construct($model = 'file', $table = 'file', $alias = 'file', $template = '') {
         parent::__construct($model, $table, $alias, $template);
+
+        $this->entity = Helper::get('file', 'entity');
     }
 
     public function navigator() {
         global $request;
 
         switch($request->query['action']) {
+            case 'delete':
+                    $this->entity->delete();
+                break;
             case 'upload':
                     $this->upload();
                 break;
@@ -19,7 +24,7 @@ class fileBackend extends backend {
     public function upload() {
         global $request;
 
-        $result = Helper::get('file', 'entity')->upload();
+        $result = $this->entity->upload();
 
         if ($request->is('ajax')) {
             $this->layout = false;

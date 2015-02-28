@@ -43,11 +43,11 @@ class config {
                         ),
 
                         'upload' => array(
-                                        'max_size' => 5,
+                                        'max_size'  => 5,
+                                        'location'  => 'media',
                                         'directory' => array(
                                                         'post' => 'bai-viet',
                                         ),
-
                         ),
 
                         'url'   => array(

@@ -10,4 +10,8 @@ class fileHelper {
         $destination = $destination . '/' . $data['filename'];
         return move_uploaded_file($data['tmp_name'], $destination);
     }
+
+    public function delete($path = '') {
+        return unlink($path);
+    }
 }

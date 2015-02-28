@@ -74,4 +74,34 @@ class fileEntity extends entity {
                         'size'      => $info['size']
         );
     }
+
+    public function delete($id = array(), &$warning = array()) {
+        $target = implode(',', $id);
+
+        $alias = $this->model->getAlias();
+        $condition = "{$alias}.id IN (" . $target . ")";
+
+        $option = array(
+                        'select' => "{$alias}.id, concat({$alias}.directory, '/', {$alias}.name) as fullpath",
+                        'where'  => $condition,
+                        'order'  => "{$alias}.id asc",
+        );
+
+        $history = $this->model->find($option);
+
+        $prefix = Helper::config()->get('upload.location') . '/';
+
+        $helper = Helper::get('file');
+        foreach ( $history as $key => $item) {
+            $path = $prefix . $item[0]['fullpath'];
+
+            if ($helper->delete($path) === false) {
+                $warning[$key] = $path;
+            }
+        }
+
+        $this->model->delete($condition);
+
+        return empty($warning);
+    }
 }
