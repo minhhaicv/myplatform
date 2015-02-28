@@ -2,7 +2,7 @@
 class securityHelper{
 
     protected function _salt() {
-        return 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi';
+        return Helper::config()->get('security.salt');
     }
 
     public function hash($string = '', $type = 'sha1') {
@@ -12,10 +12,10 @@ class securityHelper{
     public function authenticate() {
         global $request;
 
-        $prefix = $request->prefix;
+        $channel = $request->channel;
 
-        if (in_array($prefix, Helper::config()->get('authorize'))) {
-            $ignore = Helper::config()->get('ignore_authorize.'.$prefix);
+        if (in_array($channel, Helper::config()->get('authorize'))) {
+            $ignore = Helper::config()->get('ignore_authorize.'.$channel);
 
             if (empty($ignore) == false) {
                 if (isset($ignore[$request->query['module']])) {
@@ -29,7 +29,7 @@ class securityHelper{
                 }
             }
 
-            return Session::check('auth.user.id');
+            return Helper::login()->loggedIn();
         }
 
         return true;

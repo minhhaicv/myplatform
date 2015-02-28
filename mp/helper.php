@@ -29,6 +29,16 @@ class Helper {
         return $db;
     }
 
+    static function login() {
+        global $login;
+
+        if (is_null($login)) {
+            $login = Helper::get('login');
+        }
+
+        return $login;
+    }
+
     static function template() {
         global $template;
 

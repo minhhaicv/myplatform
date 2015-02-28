@@ -11,6 +11,8 @@ class auth{
     }
 
     protected function _internalAuthenticate($account = '', $password = '') {
+        global $request;
+
         $password = Helper::get('security')->hash($password);
 
         $model = Helper::get('user', 'model');
@@ -27,8 +29,8 @@ class auth{
             return false;
         }
 
-        Session::write('auth', $tmp);
+        $session[$request->channel] = $tmp;
 
-        return true;
+        return Session::write('auth', $session);
     }
 }
